@@ -1,0 +1,7 @@
+---
+description: Use pnpm as package manager
+globs:
+  - '**/*'
+---
+
+Always use `pnpm` instead of npm or yarn to install dependencies and run scripts.

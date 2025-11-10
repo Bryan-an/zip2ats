@@ -1,0 +1,17 @@
+---
+description: Auto-select best commit type and message
+globs:
+  - '**/*'
+---
+
+When making commits, automatically choose the most appropriate type and descriptive message based on the changes:
+- feat: new features
+- fix: bug fixes
+- docs: documentation changes
+- style: formatting, missing semicolons, etc.
+- refactor: code restructuring without changing behavior
+- test: adding or updating tests
+- chore: build config, gitignore, dependencies, etc.
+
+Always create descriptive, concise commit messages in English.
+

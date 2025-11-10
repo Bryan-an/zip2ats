@@ -1,0 +1,10 @@
+---
+description: Code and documentation language standards
+globs:
+  - '**/*'
+---
+
+- Use English for all code, comments, documentation, commit messages, and variable/function names
+- Use Spanish only for user-facing strings (UI text, error messages shown to users, notifications)
+- Code examples and documentation should be in English
+- API responses and logs visible to developers should be in English
