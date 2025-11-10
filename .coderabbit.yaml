@@ -1,0 +1,146 @@
+# CodeRabbit AI Configuration for zip2ats project
+# Documentation: https://docs.coderabbit.ai
+
+# Language for CodeRabbit comments and reviews
+language: en
+
+# Enable early access features
+early_access: false
+
+# Review configuration
+reviews:
+  # Review profile: "chill" (permissive) or "assertive" (strict)
+  profile: chill
+
+  # Request changes workflow (blocks PR merge if issues found)
+  request_changes_workflow: false
+
+  # High-level summary of changes
+  high_level_summary: true
+
+  # Summary of changed files in walkthrough
+  high_level_summary_placeholder: "**Overview:** This pull request introduces changes to..."
+
+  # Auto-collapse walkthrough section
+  collapse_walkthrough: false
+
+  # Add poem in reviews (fun feature)
+  poem: false
+
+  # Show review status
+  review_status: true
+
+  # Auto review configuration
+  auto_review:
+    enabled: true
+
+    # Skip auto-review if PR title contains these keywords
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT REVIEW"
+      - "DRAFT"
+      - "work in progress"
+
+    # Drafts will not be auto-reviewed
+    drafts: false
+
+  # Path-based instructions for specific file types
+  path_instructions:
+    - path: "**/*.ts"
+      instructions: |
+        - Enforce strict TypeScript best practices
+        - Check for proper type safety (avoid 'any' types)
+        - Ensure proper error handling
+        - Verify async/await patterns are correct
+
+    - path: "**/*.tsx"
+      instructions: |
+        - Verify React best practices and hooks usage
+        - Check for proper component composition
+        - Ensure accessibility (a11y) standards
+        - Look for performance issues (useMemo, useCallback usage)
+
+    - path: "app/**/*"
+      instructions: |
+        - Verify Next.js 16 App Router conventions
+        - Check for proper Server/Client Component usage
+        - Ensure proper metadata and SEO configuration
+        - Verify correct use of async components
+
+    - path: "**/*.test.ts"
+      instructions: |
+        - Verify test coverage and assertions
+        - Check for proper test structure (AAA pattern)
+        - Ensure mocks and stubs are used appropriately
+
+    - path: "package.json"
+      instructions: |
+        - Check for security vulnerabilities in dependencies
+        - Verify semantic versioning is followed
+        - Ensure devDependencies vs dependencies are correct
+
+  # Files/paths to exclude from reviews
+  path_filters:
+    excluded:
+      - "pnpm-lock.yaml"
+      - "package-lock.json"
+      - "yarn.lock"
+      - "*.min.js"
+      - "*.min.css"
+      - "dist/**"
+      - "build/**"
+      - ".next/**"
+      - "out/**"
+      - "node_modules/**"
+      - "*.md" # Review markdown but not as strictly
+      - "public/**/*.svg"
+      - "public/**/*.png"
+      - "public/**/*.jpg"
+
+  # Tool integrations
+  tools:
+    # GitHub Checks integration
+    github-checks:
+      enabled: true
+      timeout: 90000 # 90 seconds
+
+    # Shellcheck for shell scripts
+    shellcheck:
+      enabled: true
+
+    # Ruff for Python (if you add Python scripts later)
+    ruff:
+      enabled: false
+
+    # Markdownlint for markdown files
+    markdownlint:
+      enabled: true
+
+    # Biome (alternative to ESLint/Prettier, disabled since you use ESLint+Prettier)
+    biome:
+      enabled: false
+
+    # Hadolint for Dockerfiles (if you add Docker later)
+    hadolint:
+      enabled: false
+
+# Chat configuration
+chat:
+  # Auto-reply to comments mentioning @coderabbitai
+  auto_reply: true
+
+# Knowledge base
+knowledge_base:
+  # Learnings from previous reviews (disabled by default for privacy)
+  learnings:
+    scope: auto
+
+# Additional context for CodeRabbit
+context:
+  - "This is a Next.js 16 SaaS application built with TypeScript, React 19, and Tailwind CSS"
+  - "The project uses pnpm as package manager"
+  - "Backend will use Cloudflare Workers with D1 (SQLite) and R2 storage"
+  - "Code should follow Conventional Commits for commit messages"
+  - "All user-facing strings should be in Spanish; code, comments, and docs in English"
+  - "Focus on performance, security, and maintainability"
+  - "This is a startup/MVP, so pragmatism over perfection is acceptable"
