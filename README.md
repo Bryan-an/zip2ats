@@ -1,6 +1,6 @@
 # zip2ats
 
-FacturaBox EC — From SRI XML to ATS ready in minutes.
+From SRI XML to ATS ready in minutes.
 
 A micro-SaaS web app that processes electronic receipts XML from Ecuador's SRI, normalizes data, and generates ATS/purchase-sales books in Excel/CSV format.
 
