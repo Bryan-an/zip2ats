@@ -124,6 +124,41 @@ npx wrangler d1 create zip2ats-db-production
 
 Copy the `database_id` to `wrangler.toml`.
 
+## Working with R2
+
+### Created Buckets
+
+Development:
+
+- Name: `zip2ats-files`
+- Created: 2025-11-14
+- Purpose: Store uploaded XML files and generated reports
+
+Production:
+
+- Name: `zip2ats-files-production`
+- Created: 2025-11-14
+- Purpose: Production XML files and reports
+
+### R2 Commands
+
+```bash
+# List all buckets
+pnpm wrangler r2 bucket list
+
+# Upload a file
+pnpm wrangler r2 object put zip2ats-files/test.xml --file=./test.xml
+
+# List files in a bucket
+pnpm wrangler r2 object list zip2ats-files
+
+# Download a file
+pnpm wrangler r2 object get zip2ats-files/test.xml --file=./downloaded.xml
+
+# Delete a file
+pnpm wrangler r2 object delete zip2ats-files/test.xml
+```
+
 ### Execute Queries
 
 ```bash
