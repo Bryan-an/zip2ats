@@ -39,3 +39,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# cloudflare
+.wrangler/
+.dev.vars
+wrangler.toml.local
+
+# drizzle
+.drizzle/
+db/migrations/*.sql
+!db/migrations/.gitkeep
+
+# local database (for development)
+*.db
+*.sqlite
+*.sqlite3
