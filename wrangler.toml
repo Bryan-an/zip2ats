@@ -12,7 +12,8 @@ pages_build_output_dir = ".vercel/output/static"
 [[d1_databases]]
 binding = "DB"
 database_name = "zip2ats-db"
-database_id = "your-database-id-here" # Replace with actual D1 database ID
+database_id = "5a6f0ac1-d496-4a10-b3d8-9bba8a3d9c2e"
+migrations_dir = "db/migrations"
 
 # For local development (creates a local SQLite database)
 # Run: npx wrangler d1 create zip2ats-db
@@ -56,5 +57,3 @@ bucket_name = "zip2ats-files-production"
 # Run: npx wrangler secret put JWT_SECRET
 # Run: npx wrangler secret put CLERK_SECRET_KEY (if using Clerk)
 # etc.
-
-

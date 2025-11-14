@@ -47,8 +47,6 @@ wrangler.toml.local
 
 # drizzle
 .drizzle/
-db/migrations/*.sql
-!db/migrations/.gitkeep
 
 # local database (for development)
 *.db
