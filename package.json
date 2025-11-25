@@ -10,18 +10,26 @@
     "lint:fix": "eslint --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx db/seed.ts"
   },
   "dependencies": {
+    "drizzle-orm": "^0.44.7",
     "next": "16.0.1",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251111.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.6",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
     "eslint-config-prettier": "^10.1.8",
@@ -29,7 +37,8 @@
     "lint-staged": "^16.2.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.48.0"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs}": [

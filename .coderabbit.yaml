@@ -79,23 +79,21 @@ reviews:
         - Verify semantic versioning is followed
         - Ensure devDependencies vs dependencies are correct
 
-  # Files/paths to exclude from reviews
+  # Files/paths to exclude from reviews (prefix with ! to exclude)
   path_filters:
-    excluded:
-      - "pnpm-lock.yaml"
-      - "package-lock.json"
-      - "yarn.lock"
-      - "*.min.js"
-      - "*.min.css"
-      - "dist/**"
-      - "build/**"
-      - ".next/**"
-      - "out/**"
-      - "node_modules/**"
-      - "*.md" # Review markdown but not as strictly
-      - "public/**/*.svg"
-      - "public/**/*.png"
-      - "public/**/*.jpg"
+    - "!pnpm-lock.yaml"
+    - "!package-lock.json"
+    - "!yarn.lock"
+    - "!*.min.js"
+    - "!*.min.css"
+    - "!dist/**"
+    - "!build/**"
+    - "!.next/**"
+    - "!out/**"
+    - "!node_modules/**"
+    - "!public/**/*.svg"
+    - "!public/**/*.png"
+    - "!public/**/*.jpg"
 
   # Tool integrations
   tools:

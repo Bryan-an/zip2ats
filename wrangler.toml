@@ -1,0 +1,59 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "zip2ats"
+compatibility_date = "2025-01-10"
+compatibility_flags = ["nodejs_compat"]
+
+# Pages configuration for Next.js
+pages_build_output_dir = ".vercel/output/static"
+
+# =====================================================
+# D1 Database Binding
+# =====================================================
+[[d1_databases]]
+binding = "DB"
+database_name = "zip2ats-db"
+database_id = "5a6f0ac1-d496-4a10-b3d8-9bba8a3d9c2e"
+migrations_dir = "db/migrations"
+
+# For local development (creates a local SQLite database)
+# Run: npx wrangler d1 create zip2ats-db
+# Then copy the database_id from the output
+
+# =====================================================
+# R2 Storage Binding (for XML files)
+# =====================================================
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "zip2ats-files"
+# Run: npx wrangler r2 bucket create zip2ats-files
+
+# =====================================================
+# Environment Variables
+# =====================================================
+[vars]
+ENVIRONMENT = "development"
+
+# =====================================================
+# Production Environment
+# =====================================================
+[env.production]
+name = "zip2ats-production"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "zip2ats-db-production"
+database_id = "your-production-database-id-here"
+
+[[env.production.r2_buckets]]
+binding = "BUCKET"
+bucket_name = "zip2ats-files-production"
+
+# =====================================================
+# Secrets (set via CLI)
+# =====================================================
+# Run: npx wrangler secret put JWT_SECRET
+# Run: npx wrangler secret put CLERK_SECRET_KEY (if using Clerk)
+# etc.

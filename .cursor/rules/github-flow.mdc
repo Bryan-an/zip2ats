@@ -1,0 +1,35 @@
+---
+description: GitHub Flow branching strategy
+globs:
+  - '**/*'
+---
+
+Follow GitHub Flow methodology:
+
+## Branches
+Format: `<type>/<description>`
+
+Types:
+- feature/ - new features
+- fix/ - bug fixes
+- chore/ - maintenance, dependencies, setup
+- docs/ - documentation
+- refactor/ - code restructuring
+- test/ - tests
+- perf/ - performance improvements
+
+Rules:
+- lowercase only
+- use hyphens for spaces
+- descriptive but concise
+- branch from main, merge to main
+
+## Workflow
+1. Create branch from main
+2. Commit often (conventional commits)
+3. Push and open PR
+4. Review, test, merge
+5. Delete branch after merge
+6. Deploy from main
+
+Keep main always deployable.

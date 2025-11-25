@@ -1,0 +1,46 @@
+import { drizzle } from "drizzle-orm/d1";
+import type { D1Database } from "@cloudflare/workers-types";
+import * as schema from "./schema";
+
+/**
+ * Creates a Drizzle database client for Cloudflare D1
+ * @param d1 - D1Database instance from Cloudflare Workers environment
+ * @returns Drizzle database client with schema
+ */
+export function createDbClient(d1: D1Database) {
+  return drizzle(d1, { schema });
+}
+
+/**
+ * Type of the database client
+ */
+export type DbClient = ReturnType<typeof createDbClient>;
+
+/**
+ * Example usage in Cloudflare Workers or Next.js API routes:
+ *
+ * @example
+ * // In a Cloudflare Worker
+ * export interface Env {
+ *   DB: D1Database;
+ * }
+ *
+ * export default {
+ *   async fetch(request: Request, env: Env) {
+ *     const db = createDbClient(env.DB);
+ *     const orgs = await db.select().from(schema.organizations);
+ *     return Response.json(orgs);
+ *   }
+ * };
+ *
+ * @example
+ * // In a Next.js API route (with next-on-pages)
+ * import { getRequestContext } from '@cloudflare/next-on-pages';
+ *
+ * export async function GET() {
+ *   const { env } = getRequestContext();
+ *   const db = createDbClient(env.DB);
+ *   const orgs = await db.select().from(schema.organizations);
+ *   return Response.json(orgs);
+ * }
+ */
