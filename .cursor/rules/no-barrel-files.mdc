@@ -1,0 +1,31 @@
+---
+description: Avoid barrel files (index.ts re-exports)
+globs: ["**/*.ts", "**/*.tsx"]
+alwaysApply: false
+---
+
+# No Barrel Files
+
+Use direct imports instead of barrel files (index.ts that re-export).
+
+## Why
+- Better tree-shaking
+- Faster dev server (Next.js)
+- Smaller bundles (Cloudflare Workers)
+- Avoids circular dependencies
+
+## Do
+```typescript
+import { parseFactura } from '@/lib/parser/factura';
+import { validateXML } from '@/lib/parser/validators';
+```
+
+## Don't
+```typescript
+// index.ts barrel file
+export * from './factura';
+export * from './validators';
+
+// importing from barrel
+import { parseFactura, validateXML } from '@/lib/parser';
+```
