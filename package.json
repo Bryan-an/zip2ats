@@ -18,7 +18,8 @@
     "db:seed": "tsx db/seed.ts"
   },
   "dependencies": {
-    "drizzle-orm": "^0.44.7",
+    "drizzle-orm": "0.44.7",
+    "fast-xml-parser": "5.3.2",
     "next": "16.0.1",
     "react": "19.2.0",
     "react-dom": "19.2.0"

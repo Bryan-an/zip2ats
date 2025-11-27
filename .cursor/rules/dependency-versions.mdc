@@ -1,0 +1,32 @@
+---
+description: Dependency versioning strategy
+globs: ["package.json"]
+alwaysApply: false
+---
+
+# Dependency Versions
+
+## Rules
+- `dependencies`: exact versions (no ^ or ~)
+- `devDependencies`: semver with ^ allowed
+
+## Why
+- Production deps affect bundle → exact for stability
+- Dev deps are tooling only → ^ for easy updates
+- Lockfile guarantees reproducibility either way
+
+## Example
+```json
+{
+  "dependencies": {
+    "next": "16.0.1",
+    "react": "19.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "eslint": "^9"
+  }
+}
+```
+
+Install exact: `pnpm add -E <package>`
