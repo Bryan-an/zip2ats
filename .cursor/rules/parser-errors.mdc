@@ -1,0 +1,20 @@
+---
+description: Parser error codes centralization
+globs: lib/parser/**/*.ts
+alwaysApply: false
+---
+
+# Parser Error Codes
+
+All parser error codes MUST be defined in `lib/parser/errors.ts` inside `PARSER_ERRORS`.
+
+```typescript
+// ✅ Correct
+import { PARSER_ERRORS } from "@/lib/parser/errors";
+code: PARSER_ERRORS.MISSING_CLAVE_ACCESO
+
+// ❌ Wrong - inline string
+code: "MISSING_CLAVE_ACCESO"
+```
+
+When adding new errors: add to `PARSER_ERRORS`, then import and use.

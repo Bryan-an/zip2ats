@@ -1,35 +1,47 @@
 // =====================================================
-// TIPOS PARA XML DEL SRI DE ECUADOR
+// SRI Ecuador XML Types
 // =====================================================
 
+import type {
+  SRIAmbiente,
+  SRIEstadoAutorizacion,
+  SRIObligadoContabilidad,
+  SRITaxType,
+  SRIRetentionType,
+  SRITipoIdentificacion,
+  SRIFormaPago,
+  SRIDocType,
+} from "@/constants/sri-codes";
+import type { DocumentType } from "@/constants/document-types";
+
 /**
- * Estructura general de un XML autorizado del SRI
+ * General structure of an SRI authorized XML
  */
 export interface SRIAutorizacionXML {
   autorizacion: {
-    estado: "AUTORIZADO" | "NO AUTORIZADO";
+    estado: SRIEstadoAutorizacion;
     numeroAutorizacion: string;
     fechaAutorizacion: string; // ISO datetime
-    ambiente: "1" | "2"; // 1=Pruebas, 2=Producción
-    comprobante: string; // XML string interno con CDATA
+    ambiente: SRIAmbiente;
+    comprobante: string; // Inner XML string with CDATA
   };
 }
 
 // =====================================================
-// INFORMACIÓN TRIBUTARIA (común a todos los documentos)
+// InfoTributaria (common to all documents)
 // =====================================================
 
 export interface InfoTributaria {
-  ambiente: "1" | "2";
+  ambiente: SRIAmbiente;
   tipoEmision: "1"; // 1=Normal
   razonSocial: string;
   nombreComercial?: string;
   ruc: string;
   claveAcceso: string;
   codDoc: string; // 01=Factura, 04=Nota Crédito, 05=Nota Débito, 06=Guía Remisión, 07=Retención
-  estab: string; // 3 dígitos
-  ptoEmi: string; // 3 dígitos
-  secuencial: string; // 9 dígitos
+  estab: string; // 3 digits
+  ptoEmi: string; // 3 digits
+  secuencial: string; // 9 digits
   dirMatriz: string;
 }
 
@@ -56,12 +68,12 @@ export interface InfoFactura {
   fechaEmision: string; // DD/MM/YYYY
   dirEstablecimiento?: string;
   contribuyenteEspecial?: string;
-  obligadoContabilidad: "SI" | "NO";
-  tipoIdentificacionComprador: TipoIdentificacionCode;
+  obligadoContabilidad: SRIObligadoContabilidad;
+  tipoIdentificacionComprador: SRITipoIdentificacion;
   razonSocialComprador: string;
   identificacionComprador: string;
   direccionComprador?: string;
-  totalSinImpuestos: string; // decimal as string
+  totalSinImpuestos: string; // Decimal as string
   totalDescuento: string;
   totalConImpuestos: {
     totalImpuesto: TotalImpuesto | TotalImpuesto[];
@@ -88,7 +100,7 @@ export interface DetalleFactura {
 }
 
 export interface TotalImpuesto {
-  codigo: "2" | "3" | "5"; // 2=IVA, 3=ICE, 5=IRBPNR
+  codigo: SRITaxType; // 2=IVA, 3=ICE, 5=IRBPNR
   codigoPorcentaje: string;
   baseImponible: string;
   valor: string;
@@ -96,7 +108,7 @@ export interface TotalImpuesto {
 }
 
 export interface ImpuestoDetalle {
-  codigo: "2" | "3" | "5";
+  codigo: SRITaxType;
   codigoPorcentaje: string;
   tarifa: string;
   baseImponible: string;
@@ -104,7 +116,7 @@ export interface ImpuestoDetalle {
 }
 
 export interface Pago {
-  formaPago: FormaPagoCode;
+  formaPago: SRIFormaPago;
   total: string;
   plazo?: string;
   unidadTiempo?: string;
@@ -138,15 +150,15 @@ export interface InfoCompRetencion {
   fechaEmision: string;
   dirEstablecimiento?: string;
   contribuyenteEspecial?: string;
-  obligadoContabilidad: "SI" | "NO";
-  tipoIdentificacionSujetoRetenido: TipoIdentificacionCode;
+  obligadoContabilidad: SRIObligadoContabilidad;
+  tipoIdentificacionSujetoRetenido: SRITipoIdentificacion;
   razonSocialSujetoRetenido: string;
   identificacionSujetoRetenido: string;
-  periodoFiscal: string; // MM/YYYY
+  periodoFiscal: string; // Format: MM/YYYY
 }
 
 export interface ImpuestoRetencion {
-  codigo: "1" | "2"; // 1=Renta, 2=IVA
+  codigo: SRIRetentionType; // 1=Renta, 2=IVA
   codigoRetencion: string;
   baseImponible: string;
   porcentajeRetener: string;
@@ -178,13 +190,13 @@ export interface NotaCreditoXML {
 export interface InfoNotaCredito {
   fechaEmision: string;
   dirEstablecimiento?: string;
-  tipoIdentificacionComprador: TipoIdentificacionCode;
+  tipoIdentificacionComprador: SRITipoIdentificacion;
   razonSocialComprador: string;
   identificacionComprador: string;
   contribuyenteEspecial?: string;
-  obligadoContabilidad: "SI" | "NO";
-  codDocModificado: "01" | "04"; // 01=Factura, 04=Nota Crédito
-  numDocModificado: string; // 15 dígitos
+  obligadoContabilidad: SRIObligadoContabilidad;
+  codDocModificado: SRIDocType; // 01=Factura, 04=Nota Crédito
+  numDocModificado: string; // 15 digits
   fechaEmisionDocSustento: string;
   totalSinImpuestos: string;
   valorModificacion: string;
@@ -230,12 +242,12 @@ export interface NotaDebitoXML {
 export interface InfoNotaDebito {
   fechaEmision: string;
   dirEstablecimiento?: string;
-  tipoIdentificacionComprador: TipoIdentificacionCode;
+  tipoIdentificacionComprador: SRITipoIdentificacion;
   razonSocialComprador: string;
   identificacionComprador: string;
   contribuyenteEspecial?: string;
-  obligadoContabilidad: "SI" | "NO";
-  codDocModificado: "01"; // 01=Factura
+  obligadoContabilidad: SRIObligadoContabilidad;
+  codDocModificado: SRIDocType; // 01=Factura
   numDocModificado: string;
   fechaEmisionDocSustento: string;
   totalSinImpuestos: string;
@@ -273,9 +285,9 @@ export interface InfoGuiaRemision {
   dirEstablecimiento: string;
   dirPartida: string;
   razonSocialTransportista: string;
-  tipoIdentificacionTransportista: TipoIdentificacionCode;
+  tipoIdentificacionTransportista: SRITipoIdentificacion;
   rucTransportista: string;
-  obligadoContabilidad: "SI" | "NO";
+  obligadoContabilidad: SRIObligadoContabilidad;
   contribuyenteEspecial?: string;
   fechaIniTransporte: string;
   fechaFinTransporte: string;
@@ -307,59 +319,17 @@ export interface DetalleGuiaRemision {
 }
 
 // =====================================================
-// CÓDIGOS DEL SRI
-// =====================================================
-
-export type TipoIdentificacionCode =
-  | "04" // RUC
-  | "05" // CEDULA
-  | "06" // PASAPORTE
-  | "07" // CONSUMIDOR FINAL
-  | "08"; // IDENTIFICACION EXTERIOR
-
-export type FormaPagoCode =
-  | "01" // SIN UTILIZACION DEL SISTEMA FINANCIERO
-  | "15" // COMPENSACIÓN DE DEUDAS
-  | "16" // TARJETA DE DÉBITO
-  | "17" // DINERO ELECTRÓNICO
-  | "18" // TARJETA PREPAGO
-  | "19" // TARJETA DE CRÉDITO
-  | "20" // OTROS CON UTILIZACION DEL SISTEMA FINANCIERO
-  | "21"; // ENDOSO DE TITULOS
-
-export type CodigoPorcentajeIVA =
-  | "0" // 0%
-  | "2" // 12%
-  | "3" // 14%
-  | "4" // 15%
-  | "6" // No Objeto de Impuesto
-  | "7"; // Exento de IVA
-
-export type CodigoDocumento =
-  | "01" // FACTURA
-  | "03" // LIQUIDACION DE COMPRA
-  | "04" // NOTA DE CREDITO
-  | "05" // NOTA DE DEBITO
-  | "06" // GUIA DE REMISION
-  | "07"; // COMPROBANTE DE RETENCION
-
-// =====================================================
-// PARSER RESULT (Documento normalizado)
+// Parser Result (Normalized document)
 // =====================================================
 
 export interface ParsedDocument {
-  tipo:
-    | "factura"
-    | "retencion"
-    | "nota_credito"
-    | "nota_debito"
-    | "guia_remision";
+  tipo: DocumentType;
   claveAcceso: string;
   numeroAutorizacion: string;
   fechaAutorizacion: string;
-  ambiente: "1" | "2";
+  ambiente: SRIAmbiente;
 
-  // Datos normalizados
+  // Normalized data
   emisor: {
     ruc: string;
     razonSocial: string;
@@ -367,7 +337,7 @@ export interface ParsedDocument {
   };
 
   receptor: {
-    tipoIdentificacion: TipoIdentificacionCode;
+    tipoIdentificacion: SRITipoIdentificacion;
     identificacion: string;
     razonSocial: string;
   };
@@ -375,7 +345,7 @@ export interface ParsedDocument {
   fecha: string; // ISO date
 
   valores: {
-    subtotal: number; // en centavos
+    subtotal: number; // In cents
     iva0: number;
     iva12: number;
     iva15: number;
@@ -391,44 +361,44 @@ export interface ParsedDocument {
     renta: number;
   };
 
-  formaPago?: FormaPagoCode;
+  formaPago?: SRIFormaPago;
 
-  // XML original para auditoría
+  // Original XML for audit
   xmlHash: string;
 }
 
 // =====================================================
-// PARSER OPTIONS
+// Parser Options
 // =====================================================
 
 export interface ParserOptions {
   /**
-   * Validar estructura del XML antes de parsear
+   * Validate XML structure before parsing
    */
   validate?: boolean;
 
   /**
-   * Incluir warnings en el resultado
+   * Include warnings in the result
    */
   includeWarnings?: boolean;
 
   /**
-   * Modo estricto (fallar si hay datos faltantes)
+   * Strict mode (fail if data is missing)
    */
   strict?: boolean;
+}
+
+export interface ValidationError {
+  code: string;
+  message: string;
+  field?: string;
+  line?: number;
+  col?: number;
 }
 
 export interface ParserResult {
   success: boolean;
   document?: ParsedDocument;
-  errors?: Array<{
-    code: string;
-    message: string;
-    field?: string;
-  }>;
-  warnings?: Array<{
-    code: string;
-    message: string;
-    field?: string;
-  }>;
+  errors?: ValidationError[];
+  warnings?: ValidationError[];
 }
