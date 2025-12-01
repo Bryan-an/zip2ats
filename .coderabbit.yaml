@@ -131,5 +131,4 @@ chat:
 knowledge_base:
   # Learnings from previous reviews
   learnings:
-    enabled: true
     scope: auto
