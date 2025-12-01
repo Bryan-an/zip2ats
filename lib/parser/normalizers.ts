@@ -116,7 +116,8 @@ export function normalizeString(value: string | undefined | null): string {
 }
 
 /**
- * Extract RUC validation digit (last digit)
+ * Extract RUC check digit (9th digit at index 8)
+ * The Ecuadorian RUC validation digit is at position 9 of the 13-digit RUC
  */
 export function getRUCValidationDigit(ruc: string): string | null {
   if (!ruc || ruc.length !== 13) return null;
