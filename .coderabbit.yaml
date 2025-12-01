@@ -129,16 +129,7 @@ chat:
 
 # Knowledge base
 knowledge_base:
-  # Learnings from previous reviews (disabled by default for privacy)
+  # Learnings from previous reviews
   learnings:
+    enabled: true
     scope: auto
-
-# Additional context for CodeRabbit
-context:
-  - "This is a Next.js 16 SaaS application built with TypeScript, React 19, and Tailwind CSS"
-  - "The project uses pnpm as package manager"
-  - "Backend will use Cloudflare Workers with D1 (SQLite) and R2 storage"
-  - "Code should follow Conventional Commits for commit messages"
-  - "All user-facing strings should be in Spanish; code, comments, and docs in English"
-  - "Focus on performance, security, and maintainability"
-  - "This is a startup/MVP, so pragmatism over perfection is acceptable"
