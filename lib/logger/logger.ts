@@ -69,6 +69,7 @@ export class Logger implements ILogger {
 
   /**
    * Create a child logger with additional context
+   * Child inherits a copy of parent's transports at creation time
    */
   withContext(context: Record<string, unknown>): ILogger {
     const child = new Logger({
@@ -76,8 +77,8 @@ export class Logger implements ILogger {
       defaultContext: { ...this.context, ...context },
     });
 
-    // Share transports with parent
-    child.transports = this.transports;
+    // Copy transports to isolate child from parent
+    child.transports = [...this.transports];
 
     return child;
   }
