@@ -67,8 +67,8 @@ export async function POST(request: NextRequest) {
     // Process the ZIP file
     const result = await processZipFile(buffer);
 
-    // Check if processing had critical errors (no XML files found)
-    if (result.xmlFiles === 0 && result.errors.length > 0) {
+    // Check if processing failed (no XMLs found or all XMLs failed parsing)
+    if (result.processed === 0 && result.errors.length > 0) {
       return jsonError(
         UPLOAD_ERRORS.PROCESSING_FAILED,
         result.errors[0]?.message || "Error al procesar el archivo ZIP",
