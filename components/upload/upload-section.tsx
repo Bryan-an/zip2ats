@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, FileArchive } from "lucide-react";
+import { AlertCircle, FileArchive, RotateCcw } from "lucide-react";
 import { useFileUpload, UPLOAD_STATES } from "@/hooks/use-file-upload";
 import { Dropzone } from "@/components/ui/dropzone";
 import { UploadResults } from "@/components/upload/results";
@@ -54,6 +54,7 @@ export function UploadSection() {
 
         <div className="flex justify-center">
           <Button variant="outline" onClick={reset}>
+            <RotateCcw className="h-4 w-4" />
             Intentar de nuevo
           </Button>
         </div>
