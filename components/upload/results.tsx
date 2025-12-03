@@ -50,7 +50,7 @@ export function UploadResults({
     <div className={cn("space-y-6", className)}>
       {/* Summary Card */}
       <Card>
-        <CardHeader className="pb-3">
+        <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             {allFailed ? (
               <>
