@@ -11,3 +11,14 @@ export const DOCUMENT_TYPES = {
 } as const;
 
 export type DocumentType = (typeof DOCUMENT_TYPES)[keyof typeof DOCUMENT_TYPES];
+
+/**
+ * Human-readable labels for document types
+ */
+export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
+  factura: "Factura",
+  retencion: "Retención",
+  nota_credito: "Nota de Crédito",
+  nota_debito: "Nota de Débito",
+  guia_remision: "Guía de Remisión",
+};
