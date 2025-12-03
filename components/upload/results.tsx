@@ -111,7 +111,7 @@ export function UploadResults({
       {/* Results Table */}
       {result.results.length > 0 && (
         <Card>
-          <CardContent className="p-0">
+          <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -188,7 +188,10 @@ function ResultRow({ fileResult }: { fileResult: FileProcessResult }) {
         </TableCell>
 
         <TableCell className="text-center">
-          <Badge variant="destructive">
+          <Badge
+            variant="outline"
+            className="border-destructive text-destructive"
+          >
             <XCircle aria-hidden="true" />
             Error
           </Badge>
