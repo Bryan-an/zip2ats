@@ -137,7 +137,7 @@ export function UploadResults({
       {/* Errors List */}
       {result.errors.length > 0 && (
         <Card className="border-destructive/50">
-          <CardHeader className="pb-3">
+          <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base text-destructive">
               <XCircle className="h-4 w-4" />
               Errores ({result.errors.length})
@@ -147,7 +147,7 @@ export function UploadResults({
           <CardContent>
             <ul className="space-y-2 text-sm">
               {result.errors.map((error, index) => (
-                <li key={index} className="flex gap-2">
+                <li key={index} className="flex gap-2 items-center">
                   <span className="font-mono text-xs text-muted-foreground">
                     {error.filename || "—"}
                   </span>
