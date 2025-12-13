@@ -2,21 +2,9 @@
  * Extract XML files from ZIP archive
  */
 
-import { unzip } from "fflate";
+import { unzipAsync } from "./utils";
 import type { ExtractedFile, ZipExtractionResult, ZipError } from "./types";
 import { ZIP_ERRORS } from "./errors";
-
-/**
- * Promisified wrapper for fflate's unzip
- */
-function unzipAsync(data: Uint8Array): Promise<Record<string, Uint8Array>> {
-  return new Promise((resolve, reject) => {
-    unzip(data, (err, result) => {
-      if (err) reject(err);
-      else resolve(result);
-    });
-  });
-}
 
 /**
  * Extract XML files from a ZIP buffer
