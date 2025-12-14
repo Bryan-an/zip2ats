@@ -150,7 +150,6 @@ export async function POST(request: NextRequest) {
       documentCount: documents.length,
       formato,
       periodo: options.periodo,
-      contribuyenteRuc: options.contribuyenteRuc,
     });
 
     // Prepare options for ATS generator
