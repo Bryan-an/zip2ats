@@ -1,6 +1,12 @@
 /**
  * ATS Generation API Route
- * Generates ATS reports from parsed documents in Excel or CSV format
+ * Generates ATS reports from parsed documents in XLSX, CSV, or ZIP format.
+ *
+ * Response format depends on `options`:
+ * - `options.formato === "xlsx"`: returns a single Excel (`.xlsx`) file.
+ * - `options.formato === "csv"` + `options.csvSection` provided: returns a single CSV (`.csv`) for that section.
+ * - `options.formato === "csv"` + no `options.csvSection`: returns a ZIP (`.zip`) bundle containing
+ *   one CSV per section with data (e.g., `ATS_<periodo>_compras.csv`, `ATS_<periodo>_ventas.csv`).
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -110,7 +116,16 @@ function validateRequest(body: unknown): ValidationResult {
  * Generate an ATS report from parsed documents
  *
  * @param request - Request with JSON body containing documents and options
- * @returns Binary file (Excel or CSV)
+ * @returns Binary file (XLSX, CSV, or ZIP)
+ *
+ * Response selection:
+ * - `options.formato === "xlsx"`: returns a single `.xlsx` file.
+ * - `options.formato === "csv"` and `options.csvSection` is provided: returns a single `.csv` file
+ *   for the requested section.
+ * - `options.formato === "csv"` and `options.csvSection` is not provided: returns a `.zip` bundle
+ *   containing one CSV per section that has data:
+ *   - `ATS_<periodo>_compras.csv` (included only if compras has rows)
+ *   - `ATS_<periodo>_ventas.csv` (included only if ventas has rows)
  */
 export async function POST(request: NextRequest) {
   try {
@@ -192,7 +207,8 @@ export async function POST(request: NextRequest) {
           },
         });
       } else {
-        // ZIP file with both CSV sections (only those with data)
+        // CSV bundle: when no `csvSection` is provided we return a ZIP archive
+        // containing one CSV per section that has data (compras and/or ventas).
         const fileResult = await generateZippedCSVs(report);
 
         logger.info("CSV ZIP file generated", {
