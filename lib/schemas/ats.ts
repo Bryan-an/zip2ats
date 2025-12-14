@@ -29,7 +29,7 @@ export const GenerateATSOptionsSchema = z.object({
         ...ATSFileFormat[],
       ],
       {
-        message: `Formato inválido. Debe ser '${ATS_FILE_FORMATS.XLSX}' o '${ATS_FILE_FORMATS.CSV}'`,
+        error: `Formato inválido. Debe ser '${ATS_FILE_FORMATS.XLSX}' o '${ATS_FILE_FORMATS.CSV}'`,
       }
     )
     .optional(),
@@ -51,7 +51,7 @@ export const GenerateATSOptionsSchema = z.object({
         ...CSVSection[],
       ],
       {
-        message: `Sección CSV inválida. Debe ser '${CSV_SECTIONS.COMPRAS}' o '${CSV_SECTIONS.VENTAS}'`,
+        error: `Sección CSV inválida. Debe ser '${CSV_SECTIONS.COMPRAS}' o '${CSV_SECTIONS.VENTAS}'`,
       }
     )
     .optional(),
