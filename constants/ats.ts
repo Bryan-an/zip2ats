@@ -17,9 +17,34 @@ export const ATS_ERRORS = {
 } as const;
 
 /**
- * Maximum number of documents allowed per request
+ * Maximum number of documents allowed per request.
+ *
+ * IMPORTANT (DoS/OOM guardrails):
+ * - This is only a "count" limit. It does NOT cap total request payload size.
+ * - `request.json()` buffers the entire body before validation, so callers MUST
+ *   enforce an inbound request-body size cap at the edge/proxy/platform (CDN,
+ *   reverse proxy, WAF, etc.) to prevent memory spikes and OOM.
+ * - Clients should chunk large workloads into multiple smaller requests
+ *   (batching) instead of sending massive arrays in a single call.
+ * - If you raise this limit, ensure downstream processing is chunked/streamed
+ *   and avoid building huge intermediate in-memory structures.
+ *
+ * Config:
+ * - Override via `NEXT_PUBLIC_ATS_MAX_DOCUMENTS_PER_REQUEST` (clamped to a hard
+ *   ceiling to avoid accidental spikes).
  */
-export const MAX_DOCUMENTS_PER_REQUEST = 10000;
+const DEFAULT_MAX_DOCUMENTS_PER_REQUEST = 1000;
+const HARD_MAX_DOCUMENTS_PER_REQUEST = 2000;
+
+const envMaxDocumentsPerRequest = Number.parseInt(
+  process.env.NEXT_PUBLIC_ATS_MAX_DOCUMENTS_PER_REQUEST ?? "",
+  10
+);
+
+export const MAX_DOCUMENTS_PER_REQUEST =
+  Number.isFinite(envMaxDocumentsPerRequest) && envMaxDocumentsPerRequest > 0
+    ? Math.min(envMaxDocumentsPerRequest, HARD_MAX_DOCUMENTS_PER_REQUEST)
+    : DEFAULT_MAX_DOCUMENTS_PER_REQUEST;
 
 /**
  * Valid periodo format (YYYY-MM)
