@@ -22,7 +22,7 @@ export async function generateZippedCSVs(
   const csvFiles = generateSeparateCSVs(report);
 
   if (csvFiles.length === 0) {
-    throw new Error("No hay datos para generar archivos CSV");
+    throw new Error("No data available to generate CSV files");
   }
 
   // Prepare files object for fflate
