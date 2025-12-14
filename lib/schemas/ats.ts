@@ -20,7 +20,7 @@ import {
 /**
  * Schema for ATS generation options
  */
-export const GenerateATSOptionsSchema = z.object({
+export const GenerateATSOptionsSchema = z.strictObject({
   /** Output format: xlsx (Excel) or csv */
   formato: z
     .enum(
@@ -69,7 +69,7 @@ export type GenerateATSOptions = z.infer<typeof GenerateATSOptionsSchema>;
 /**
  * Schema for POST /api/ats/generate request body
  */
-export const GenerateATSRequestSchema = z.object({
+export const GenerateATSRequestSchema = z.strictObject({
   documents: z
     .array(ParsedDocumentSchema)
     .min(1, "El array de documentos está vacío")

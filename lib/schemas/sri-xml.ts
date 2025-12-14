@@ -46,7 +46,7 @@ export const SRIFormaPagoSchema = z.enum(
 
 const CentsSchema = z.number().int();
 
-const ValoresSchema = z.object({
+const ValoresSchema = z.strictObject({
   subtotal: CentsSchema,
   iva0: CentsSchema,
   iva12: CentsSchema,
@@ -58,7 +58,7 @@ const ValoresSchema = z.object({
   total: CentsSchema,
 });
 
-const RetencionesSchema = z.object({
+const RetencionesSchema = z.strictObject({
   iva: CentsSchema,
   renta: CentsSchema,
 });
@@ -67,7 +67,7 @@ const RetencionesSchema = z.object({
  * Zod schema for validating ParsedDocument payloads.
  * Keeps request validation strict and provides TS inference.
  */
-export const ParsedDocumentSchema = z.object({
+export const ParsedDocumentSchema = z.strictObject({
   tipo: DocumentTypeSchema,
   claveAcceso: z
     .string()
@@ -76,13 +76,13 @@ export const ParsedDocumentSchema = z.object({
   fechaAutorizacion: z.string().min(1, "Fecha de autorización requerida"),
   ambiente: SRIAmbienteSchema,
 
-  emisor: z.object({
+  emisor: z.strictObject({
     ruc: z.string().regex(/^\d{13}$/, "RUC del emisor inválido (13 dígitos)"),
     razonSocial: z.string().min(1, "Razón social del emisor requerida"),
     nombreComercial: z.string().optional(),
   }),
 
-  receptor: z.object({
+  receptor: z.strictObject({
     tipoIdentificacion: SRITipoIdentificacionSchema,
     identificacion: z.string().min(1, "Identificación del receptor requerida"),
     razonSocial: z.string().min(1, "Razón social del receptor requerida"),
