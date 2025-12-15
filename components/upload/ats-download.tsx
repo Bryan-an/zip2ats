@@ -5,6 +5,7 @@ import { AlertCircle, Download, FileSpreadsheet, FileText } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import IMask from "imask";
 import type { ParsedDocument } from "@/types/sri-xml";
 import {
   ATS_FILE_FORMATS,
@@ -23,8 +24,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MaskedInput } from "@/components/ui/masked-input";
 import {
   Select,
   SelectContent,
@@ -69,12 +70,13 @@ export function ATSDownload({ documents, className }: ATSDownloadProps) {
 
   const {
     control,
-    register,
     handleSubmit,
+    trigger,
     formState: { errors, isValid },
   } = useForm<ATSDownloadFormValues>({
     resolver: zodResolver(ATSDownloadFormSchema),
-    mode: "onChange",
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       format: ATS_FILE_FORMATS.XLSX,
       csvExport: CSV_EXPORT_MODES.ZIP,
@@ -82,6 +84,10 @@ export function ATSDownload({ documents, className }: ATSDownloadProps) {
       contribuyenteRuc: "",
     },
   });
+
+  useEffect(() => {
+    void trigger();
+  }, [trigger]);
 
   const [format, csvExport, periodo, contribuyenteRuc] = useWatch({
     control,
@@ -157,6 +163,23 @@ export function ATSDownload({ documents, className }: ATSDownloadProps) {
 
   const periodoErrorMessage = errors.periodo?.message;
   const rucErrorMessage = errors.contribuyenteRuc?.message;
+
+  const periodoMaskOptions = useMemo(
+    () => ({
+      mask: "YYYY-MM",
+      blocks: {
+        YYYY: { mask: IMask.MaskedRange, from: 1900, to: 2099 },
+        MM: {
+          mask: IMask.MaskedRange,
+          from: 1,
+          to: 12,
+          maxLength: 2,
+          autofix: true,
+        },
+      },
+    }),
+    []
+  );
 
   return (
     <Card className={className}>
@@ -263,18 +286,32 @@ export function ATSDownload({ documents, className }: ATSDownloadProps) {
             <div className="space-y-2">
               <Label htmlFor={ids.periodo}>Período (opcional)</Label>
 
-              <Input
-                id={ids.periodo}
-                inputMode="numeric"
-                placeholder="YYYY-MM"
-                aria-invalid={Boolean(periodoErrorMessage)}
-                aria-describedby={[
-                  `${ids.periodo}-help`,
-                  periodoErrorMessage ? `${ids.periodo}-error` : null,
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                {...register("periodo")}
+              <Controller
+                control={control}
+                name="periodo"
+                render={({ field }) => (
+                  <MaskedInput
+                    id={ids.periodo}
+                    inputMode="numeric"
+                    placeholder="YYYY-MM"
+                    autoComplete="off"
+                    spellCheck={false}
+                    maxLength={7}
+                    value={field.value ?? ""}
+                    onAccept={(value) => field.onChange(value)}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    inputRef={field.ref}
+                    aria-invalid={Boolean(periodoErrorMessage)}
+                    aria-describedby={[
+                      `${ids.periodo}-help`,
+                      periodoErrorMessage ? `${ids.periodo}-error` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    {...periodoMaskOptions}
+                  />
+                )}
               />
 
               <p
@@ -297,18 +334,32 @@ export function ATSDownload({ documents, className }: ATSDownloadProps) {
             <div className="space-y-2">
               <Label htmlFor={ids.ruc}>RUC del contribuyente (opcional)</Label>
 
-              <Input
-                id={ids.ruc}
-                inputMode="numeric"
-                placeholder="13 dígitos"
-                aria-invalid={Boolean(rucErrorMessage)}
-                aria-describedby={[
-                  `${ids.ruc}-help`,
-                  rucErrorMessage ? `${ids.ruc}-error` : null,
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                {...register("contribuyenteRuc")}
+              <Controller
+                control={control}
+                name="contribuyenteRuc"
+                render={({ field }) => (
+                  <MaskedInput
+                    id={ids.ruc}
+                    inputMode="numeric"
+                    placeholder="13 dígitos"
+                    autoComplete="off"
+                    spellCheck={false}
+                    value={field.value ?? ""}
+                    onAccept={(value) => field.onChange(value)}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    inputRef={field.ref}
+                    aria-invalid={Boolean(rucErrorMessage)}
+                    aria-describedby={[
+                      `${ids.ruc}-help`,
+                      rucErrorMessage ? `${ids.ruc}-error` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    mask="0000000000000"
+                    unmask={true}
+                  />
+                )}
               />
 
               <p
