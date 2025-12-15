@@ -85,6 +85,27 @@ export const CSV_SECTIONS = {
 export type CSVSection = (typeof CSV_SECTIONS)[keyof typeof CSV_SECTIONS];
 
 // =====================================================
+// CSV EXPORT MODES
+// =====================================================
+
+/**
+ * Export modes for CSV output.
+ *
+ * When `options.formato === "csv"` and no `options.csvSection` is provided,
+ * the API returns a ZIP bundle containing one CSV per section with data.
+ */
+export const CSV_EXPORT_MODES = {
+  ZIP: "zip",
+} as const;
+
+/**
+ * CSV export mode: either a ZIP bundle or a single section CSV.
+ */
+export type CSVExportMode =
+  | (typeof CSV_EXPORT_MODES)[keyof typeof CSV_EXPORT_MODES]
+  | CSVSection;
+
+// =====================================================
 // DEFAULT VALUES (Fallbacks when parsing fails)
 // =====================================================
 

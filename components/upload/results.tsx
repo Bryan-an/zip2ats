@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ATSDownload } from "@/components/upload/ats-download";
 import {
   Table,
   TableBody,
@@ -20,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { BatchProcessResult, FileProcessResult } from "@/lib/zip/types";
+import type { ParsedDocument } from "@/types/sri-xml";
 import { DOCUMENT_TYPE_LABELS } from "@/constants/document-types";
 import { formatCurrency } from "@/lib/db-utils";
 
@@ -45,6 +47,10 @@ export function UploadResults({
 }: UploadResultsProps) {
   const hasErrors = result.failed > 0 || result.errors.length > 0;
   const allFailed = result.processed === 0 && hasErrors;
+
+  const successfulDocuments = result.results
+    .map((fileResult) => fileResult.result.document)
+    .filter((doc): doc is ParsedDocument => Boolean(doc));
 
   return (
     <div className={cn("space-y-6", className)}>
@@ -133,6 +139,9 @@ export function UploadResults({
           </CardContent>
         </Card>
       )}
+
+      {/* ATS Download */}
+      <ATSDownload documents={successfulDocuments} />
 
       {/* Errors List */}
       {result.errors.length > 0 && (
