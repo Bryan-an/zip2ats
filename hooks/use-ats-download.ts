@@ -65,10 +65,20 @@ function triggerBrowserDownload(blob: Blob, filename: string) {
   anchor.download = filename;
   anchor.rel = "noreferrer";
   document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
 
-  URL.revokeObjectURL(url);
+  try {
+    anchor.click();
+  } finally {
+    // Defer revocation so the download has time to start (Safari can abort if
+    // the ObjectURL is revoked immediately after click()).
+    window.setTimeout(() => {
+      try {
+        URL.revokeObjectURL(url);
+      } finally {
+        anchor.remove();
+      }
+    }, 1000);
+  }
 }
 
 export function useATSDownload(): UseATSDownloadReturn {
