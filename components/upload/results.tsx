@@ -21,7 +21,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { BatchProcessResult, FileProcessResult } from "@/lib/zip/types";
-import type { ParsedDocument } from "@/types/sri-xml";
 import { DOCUMENT_TYPE_LABELS } from "@/constants/document-types";
 import { formatCurrency } from "@/lib/db-utils";
 
@@ -48,12 +47,10 @@ export function UploadResults({
   const hasErrors = result.failed > 0 || result.errors.length > 0;
   const allFailed = result.processed === 0 && hasErrors;
 
-  const successfulDocuments = result.results
-    .map((fileResult) => {
-      const doc = fileResult.result.document;
-      return fileResult.result.success && doc ? doc : undefined;
-    })
-    .filter((doc): doc is ParsedDocument => Boolean(doc));
+  const successfulDocuments = result.results.flatMap((fileResult) => {
+    const doc = fileResult.result.document;
+    return fileResult.result.success && doc ? [doc] : [];
+  });
 
   return (
     <div className={cn("space-y-6", className)}>
