@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ATSDownload } from "@/components/upload/ats-download";
 import {
   Table,
   TableBody,
@@ -45,6 +46,11 @@ export function UploadResults({
 }: UploadResultsProps) {
   const hasErrors = result.failed > 0 || result.errors.length > 0;
   const allFailed = result.processed === 0 && hasErrors;
+
+  const successfulDocuments = result.results.flatMap((fileResult) => {
+    const doc = fileResult.result.document;
+    return fileResult.result.success && doc ? [doc] : [];
+  });
 
   return (
     <div className={cn("space-y-6", className)}>
@@ -133,6 +139,9 @@ export function UploadResults({
           </CardContent>
         </Card>
       )}
+
+      {/* ATS Download */}
+      <ATSDownload documents={successfulDocuments} />
 
       {/* Errors List */}
       {result.errors.length > 0 && (
