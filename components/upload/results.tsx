@@ -49,7 +49,10 @@ export function UploadResults({
   const allFailed = result.processed === 0 && hasErrors;
 
   const successfulDocuments = result.results
-    .map((fileResult) => fileResult.result.document)
+    .map((fileResult) => {
+      const doc = fileResult.result.document;
+      return fileResult.result.success && doc ? doc : undefined;
+    })
     .filter((doc): doc is ParsedDocument => Boolean(doc));
 
   return (
