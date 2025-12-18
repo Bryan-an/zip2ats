@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import {
   CheckCircle2,
   XCircle,
@@ -7,11 +8,18 @@ import {
   FileText,
   RotateCcw,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { clampNumber, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ATSDownload } from "@/components/upload/ats-download";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -47,10 +55,35 @@ export function UploadResults({
   const hasErrors = result.failed > 0 || result.errors.length > 0;
   const allFailed = result.processed === 0 && hasErrors;
 
-  const successfulDocuments = result.results.flatMap((fileResult) => {
-    const doc = fileResult.result.document;
-    return fileResult.result.success && doc ? [doc] : [];
-  });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+
+  const total = result.results.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const currentPage = clampNumber(page, 1, totalPages);
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, total);
+
+  const paginatedResults = useMemo(() => {
+    return result.results.slice(startIndex, endIndex);
+  }, [endIndex, result.results, startIndex]);
+
+  const onPageSizeChange = (value: string) => {
+    const nextSize = Number(value);
+
+    if (!Number.isFinite(nextSize) || nextSize <= 0) return;
+
+    setPageSize(nextSize);
+    setPage(1);
+  };
+
+  const successfulDocuments = useMemo(() => {
+    return result.results.flatMap((fileResult) => {
+      const doc = fileResult.result.document;
+      return fileResult.result.success && doc ? [doc] : [];
+    });
+  }, [result.results]);
 
   return (
     <div className={cn("space-y-6", className)}>
@@ -131,11 +164,90 @@ export function UploadResults({
               </TableHeader>
 
               <TableBody>
-                {result.results.map((fileResult, index) => (
-                  <ResultRow key={index} fileResult={fileResult} />
+                {paginatedResults.map((fileResult) => (
+                  <ResultRow
+                    key={fileResult.filename}
+                    fileResult={fileResult}
+                  />
                 ))}
               </TableBody>
             </Table>
+
+            <div className="mt-4 flex flex-col gap-3 border-t pt-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-muted-foreground">
+                Mostrando{" "}
+                <span className="font-medium text-foreground">
+                  {startIndex + 1}
+                </span>
+                –<span className="font-medium text-foreground">{endIndex}</span>{" "}
+                de <span className="font-medium text-foreground">{total}</span>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground">
+                    Filas por página
+                  </span>
+
+                  <Select
+                    value={String(pageSize)}
+                    onValueChange={onPageSizeChange}
+                  >
+                    <SelectTrigger className="h-8 w-[88px]">
+                      <SelectValue />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="25">25</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                      <SelectItem value="100">100</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="text-muted-foreground tabular-nums">
+                  Página{" "}
+                  <span className="font-medium text-foreground">
+                    {currentPage}
+                  </span>{" "}
+                  de{" "}
+                  <span className="font-medium text-foreground">
+                    {totalPages}
+                  </span>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setPage((current) =>
+                      Math.max(1, clampNumber(current, 1, totalPages) - 1)
+                    )
+                  }
+                  disabled={currentPage <= 1}
+                  aria-label="Página anterior"
+                >
+                  Anterior
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setPage((current) =>
+                      Math.min(
+                        totalPages,
+                        clampNumber(current, 1, totalPages) + 1
+                      )
+                    )
+                  }
+                  disabled={currentPage >= totalPages}
+                  aria-label="Página siguiente"
+                >
+                  Siguiente
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
