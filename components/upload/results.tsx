@@ -8,7 +8,7 @@ import {
   FileText,
   RotateCcw,
 } from "lucide-react";
-import { clampNumber, cn } from "@/lib/utils";
+import { clampNumber, cn, normalizeSearchText } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,14 +47,6 @@ type StatusFilter = (typeof STATUS_FILTERS)[keyof typeof STATUS_FILTERS];
 
 const TYPE_FILTER_ALL = "all" as const;
 type TypeFilter = typeof TYPE_FILTER_ALL | DocumentType;
-
-function normalizeSearchText(value: string) {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .trim();
-}
 
 function getRowStatus(
   fileResult: FileProcessResult
