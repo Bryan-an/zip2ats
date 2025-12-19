@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import {
   CheckCircle2,
   XCircle,
@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ATSDownload } from "@/components/upload/ats-download";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -29,8 +30,42 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { BatchProcessResult, FileProcessResult } from "@/lib/zip/types";
-import { DOCUMENT_TYPE_LABELS } from "@/constants/document-types";
+import {
+  DOCUMENT_TYPE_LABELS,
+  type DocumentType,
+} from "@/constants/document-types";
 import { formatCurrency } from "@/lib/db-utils";
+
+const STATUS_FILTERS = {
+  ALL: "all",
+  OK: "ok",
+  WARNING: "warning",
+  ERROR: "error",
+} as const;
+
+type StatusFilter = (typeof STATUS_FILTERS)[keyof typeof STATUS_FILTERS];
+
+const TYPE_FILTER_ALL = "all" as const;
+type TypeFilter = typeof TYPE_FILTER_ALL | DocumentType;
+
+function normalizeSearchText(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .trim();
+}
+
+function getRowStatus(
+  fileResult: FileProcessResult
+): Exclude<StatusFilter, typeof STATUS_FILTERS.ALL> {
+  const { result } = fileResult;
+
+  if (!result.success || !result.document) return STATUS_FILTERS.ERROR;
+
+  const warningsCount = result.warnings?.length ?? 0;
+  return warningsCount > 0 ? STATUS_FILTERS.WARNING : STATUS_FILTERS.OK;
+}
 
 interface UploadResultsProps {
   /** Processing result from API */
@@ -58,7 +93,88 @@ export function UploadResults({
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
 
-  const total = result.results.length;
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(
+    STATUS_FILTERS.ALL
+  );
+
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>(TYPE_FILTER_ALL);
+
+  const hasActiveFilters =
+    searchQuery.trim().length > 0 ||
+    statusFilter !== STATUS_FILTERS.ALL ||
+    typeFilter !== TYPE_FILTER_ALL;
+
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+
+  const normalizedSearchQuery = useMemo(
+    () => normalizeSearchText(deferredSearchQuery),
+    [deferredSearchQuery]
+  );
+
+  const documentTypeOptions = useMemo(() => {
+    const types = new Set<DocumentType>();
+
+    for (const fileResult of result.results) {
+      const doc = fileResult.result.document;
+      if (!fileResult.result.success || !doc) continue;
+      types.add(doc.tipo);
+    }
+
+    return Array.from(types).sort((a, b) =>
+      (DOCUMENT_TYPE_LABELS[a] || a).localeCompare(DOCUMENT_TYPE_LABELS[b] || b)
+    );
+  }, [result.results]);
+
+  const filteredResults = useMemo(() => {
+    const results: FileProcessResult[] = [];
+
+    for (const fileResult of result.results) {
+      const { filename, result: parseResult } = fileResult;
+      const doc = parseResult.document;
+
+      if (statusFilter !== STATUS_FILTERS.ALL) {
+        const rowStatus = getRowStatus(fileResult);
+        if (rowStatus !== statusFilter) continue;
+      }
+
+      if (typeFilter !== TYPE_FILTER_ALL) {
+        if (!doc || !parseResult.success) continue;
+        if (doc.tipo !== typeFilter) continue;
+      }
+
+      if (normalizedSearchQuery) {
+        const errorMessage = parseResult.errors?.[0]?.message || "";
+
+        const docTypeLabel = doc
+          ? DOCUMENT_TYPE_LABELS[doc.tipo] || doc.tipo
+          : "";
+
+        const haystack = normalizeSearchText(
+          [
+            filename,
+            docTypeLabel,
+            doc?.emisor.razonSocial,
+            doc?.emisor.ruc,
+            doc?.receptor.razonSocial,
+            doc?.receptor.identificacion,
+            errorMessage,
+          ]
+            .filter(Boolean)
+            .join(" ")
+        );
+
+        if (!haystack.includes(normalizedSearchQuery)) continue;
+      }
+
+      results.push(fileResult);
+    }
+
+    return results;
+  }, [normalizedSearchQuery, result.results, statusFilter, typeFilter]);
+
+  const total = filteredResults.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const currentPage = clampNumber(page, 1, totalPages);
 
@@ -66,8 +182,8 @@ export function UploadResults({
   const endIndex = Math.min(startIndex + pageSize, total);
 
   const paginatedResults = useMemo(() => {
-    return result.results.slice(startIndex, endIndex);
-  }, [endIndex, result.results, startIndex]);
+    return filteredResults.slice(startIndex, endIndex);
+  }, [endIndex, filteredResults, startIndex]);
 
   const onPageSizeChange = (value: string) => {
     const nextSize = Number(value);
@@ -75,6 +191,28 @@ export function UploadResults({
     if (!Number.isFinite(nextSize) || nextSize <= 0) return;
 
     setPageSize(nextSize);
+    setPage(1);
+  };
+
+  const onSearchQueryChange = (value: string) => {
+    setSearchQuery(value);
+    setPage(1);
+  };
+
+  const onStatusFilterChange = (value: StatusFilter) => {
+    setStatusFilter(value);
+    setPage(1);
+  };
+
+  const onTypeFilterChange = (value: TypeFilter) => {
+    setTypeFilter(value);
+    setPage(1);
+  };
+
+  const onClearFilters = () => {
+    setSearchQuery("");
+    setStatusFilter(STATUS_FILTERS.ALL);
+    setTypeFilter(TYPE_FILTER_ALL);
     setPage(1);
   };
 
@@ -151,6 +289,70 @@ export function UploadResults({
       {result.results.length > 0 && (
         <Card>
           <CardContent>
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <Input
+                aria-label="Buscar resultados"
+                value={searchQuery}
+                onChange={(event) => onSearchQueryChange(event.target.value)}
+                placeholder="Buscar por archivo, emisor, receptor…"
+                className="sm:max-w-md"
+              />
+
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <Select
+                  value={statusFilter}
+                  onValueChange={(value) =>
+                    onStatusFilterChange(value as StatusFilter)
+                  }
+                >
+                  <SelectTrigger className="h-9 w-full sm:w-[170px]">
+                    <SelectValue placeholder="Estado" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectItem value={STATUS_FILTERS.ALL}>Todos</SelectItem>
+                    <SelectItem value={STATUS_FILTERS.OK}>OK</SelectItem>
+
+                    <SelectItem value={STATUS_FILTERS.WARNING}>
+                      Advertencia
+                    </SelectItem>
+
+                    <SelectItem value={STATUS_FILTERS.ERROR}>Error</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={typeFilter}
+                  onValueChange={(value) =>
+                    onTypeFilterChange(value as TypeFilter)
+                  }
+                >
+                  <SelectTrigger className="h-9 w-full sm:w-[200px]">
+                    <SelectValue placeholder="Tipo" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectItem value={TYPE_FILTER_ALL}>Todos</SelectItem>
+
+                    {documentTypeOptions.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {DOCUMENT_TYPE_LABELS[type] || type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onClearFilters}
+                  disabled={!hasActiveFilters}
+                >
+                  Limpiar
+                </Button>
+              </div>
+            </div>
+
             <Table>
               <TableHeader>
                 <TableRow>
@@ -164,12 +366,23 @@ export function UploadResults({
               </TableHeader>
 
               <TableBody>
-                {paginatedResults.map((fileResult) => (
-                  <ResultRow
-                    key={fileResult.filename}
-                    fileResult={fileResult}
-                  />
-                ))}
+                {paginatedResults.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="text-muted-foreground text-center"
+                    >
+                      No se encontraron resultados con los filtros actuales.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedResults.map((fileResult) => (
+                    <ResultRow
+                      key={fileResult.filename}
+                      fileResult={fileResult}
+                    />
+                  ))
+                )}
               </TableBody>
             </Table>
 
@@ -177,9 +390,12 @@ export function UploadResults({
               <div className="text-muted-foreground">
                 Mostrando{" "}
                 <span className="font-medium text-foreground">
-                  {startIndex + 1}
+                  {total === 0 ? 0 : startIndex + 1}
                 </span>
-                –<span className="font-medium text-foreground">{endIndex}</span>{" "}
+                –
+                <span className="font-medium text-foreground">
+                  {total === 0 ? 0 : endIndex}
+                </span>{" "}
                 de <span className="font-medium text-foreground">{total}</span>
               </div>
 
