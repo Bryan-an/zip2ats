@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1b087fb2-fabc-48e3-b08a-54a8fd8d8329",
+  "id": "45e2948e-391d-4b72-99e9-616d0c9e4332",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "ats_reports": {
@@ -656,14 +656,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "plan": {
-          "name": "plan",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'free'"
-        },
         "status": {
           "name": "status",
           "type": "text",
@@ -671,14 +663,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'active'"
-        },
-        "max_monthly_documents": {
-          "name": "max_monthly_documents",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 100
         },
         "created_at": {
           "name": "created_at",

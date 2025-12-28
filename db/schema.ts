@@ -11,17 +11,9 @@ export const organizations = sqliteTable(
     name: text("name").notNull(),
     ruc: text("ruc").notNull().unique(),
     email: text("email").notNull(),
-    plan: text("plan", {
-      enum: ["free", "starter", "pro", "enterprise"],
-    })
-      .notNull()
-      .default("free"),
     status: text("status", { enum: ["active", "suspended", "cancelled"] })
       .notNull()
       .default("active"),
-    maxMonthlyDocuments: integer("max_monthly_documents")
-      .notNull()
-      .default(100),
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
   },

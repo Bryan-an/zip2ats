@@ -52,7 +52,6 @@ export type NewSRICatalog = InferInsertModel<typeof sriCatalogs>;
 // ENUM TYPES
 // =====================================================
 
-export type OrganizationPlan = "free" | "starter" | "pro" | "enterprise";
 export type OrganizationStatus = "active" | "suspended" | "cancelled";
 export type UserRole = "owner" | "admin" | "member";
 export type UploadBatchStatus =
@@ -166,7 +165,6 @@ export interface MonthlyDocumentsSummary {
 export interface OrganizationUsage {
   organizationId: UUID;
   name: string;
-  plan: OrganizationPlan;
   periodo: string; // YYYY-MM
   totalBatches: number;
   totalDocuments: number;
