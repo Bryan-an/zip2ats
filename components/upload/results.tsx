@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import {
   CheckCircle2,
   XCircle,
@@ -8,35 +9,44 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ATSDownload } from "@/components/upload/ats-download";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import type { BatchProcessResult, FileProcessResult } from "@/lib/zip/types";
-import { DOCUMENT_TYPE_LABELS } from "@/constants/document-types";
-import { formatCurrency } from "@/lib/db-utils";
+import { UploadResultsTableCard } from "@/components/upload/results-table-card";
+import type { BatchProcessResult } from "@/lib/zip/types";
 
+/**
+ * Props for {@link UploadResults}.
+ */
 interface UploadResultsProps {
-  /** Processing result from API */
+  /**
+   * ZIP processing result returned by the upload API.
+   */
   result: BatchProcessResult;
-  /** File name that was uploaded */
+  /**
+   * Original filename as selected by the user (optional).
+   */
   fileName?: string;
-  /** Called when user wants to upload another file */
+  /**
+   * Called when the user wants to upload another file.
+   */
   onReset: () => void;
-  /** Custom class name */
+  /**
+   * Optional wrapper class name.
+   */
   className?: string;
 }
 
 /**
- * Display results after processing a ZIP file
+ * Displays the ZIP upload processing results.
+ *
+ * This component renders:
+ * - A high-level summary (processed/failed/skipped)
+ * - A searchable/filterable/paginated results table
+ * - ATS download actions for successfully parsed documents
+ * - ZIP-level error list and a reset action
+ *
+ * @param props - Component props {@link UploadResultsProps}.
  */
 export function UploadResults({
   result,
@@ -47,10 +57,12 @@ export function UploadResults({
   const hasErrors = result.failed > 0 || result.errors.length > 0;
   const allFailed = result.processed === 0 && hasErrors;
 
-  const successfulDocuments = result.results.flatMap((fileResult) => {
-    const doc = fileResult.result.document;
-    return fileResult.result.success && doc ? [doc] : [];
-  });
+  const successfulDocuments = useMemo(() => {
+    return result.results.flatMap((fileResult) => {
+      const doc = fileResult.result.document;
+      return fileResult.result.success && doc ? [doc] : [];
+    });
+  }, [result.results]);
 
   return (
     <div className={cn("space-y-6", className)}>
@@ -115,30 +127,7 @@ export function UploadResults({
       </Card>
 
       {/* Results Table */}
-      {result.results.length > 0 && (
-        <Card>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Archivo</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Emisor</TableHead>
-                  <TableHead>Receptor</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="text-center">Estado</TableHead>
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {result.results.map((fileResult, index) => (
-                  <ResultRow key={index} fileResult={fileResult} />
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
+      <UploadResultsTableCard results={result.results} />
 
       {/* ATS Download */}
       <ATSDownload documents={successfulDocuments} />
@@ -177,94 +166,5 @@ export function UploadResults({
         </Button>
       </div>
     </div>
-  );
-}
-
-/**
- * Single result row component
- */
-function ResultRow({ fileResult }: { fileResult: FileProcessResult }) {
-  const { filename, result } = fileResult;
-  const doc = result.document;
-
-  if (!result.success || !doc) {
-    return (
-      <TableRow>
-        <TableCell className="font-mono text-xs">{filename}</TableCell>
-
-        <TableCell colSpan={4} className="text-muted-foreground">
-          {result.errors?.[0]?.message || "Error al procesar"}
-        </TableCell>
-
-        <TableCell className="text-center">
-          <Badge
-            variant="outline"
-            className="border-destructive text-destructive"
-          >
-            <XCircle aria-hidden="true" />
-            Error
-          </Badge>
-        </TableCell>
-      </TableRow>
-    );
-  }
-
-  const hasWarnings = result.warnings && result.warnings.length > 0;
-
-  return (
-    <TableRow>
-      <TableCell className="font-mono text-xs">{filename}</TableCell>
-
-      <TableCell>
-        <Badge variant="secondary">
-          {DOCUMENT_TYPE_LABELS[doc.tipo] || doc.tipo}
-        </Badge>
-      </TableCell>
-
-      <TableCell>
-        <div className="max-w-[200px] truncate" title={doc.emisor.razonSocial}>
-          {doc.emisor.razonSocial}
-        </div>
-
-        <div className="text-xs text-muted-foreground">{doc.emisor.ruc}</div>
-      </TableCell>
-
-      <TableCell>
-        <div
-          className="max-w-[200px] truncate"
-          title={doc.receptor.razonSocial}
-        >
-          {doc.receptor.razonSocial}
-        </div>
-
-        <div className="text-xs text-muted-foreground">
-          {doc.receptor.identificacion}
-        </div>
-      </TableCell>
-
-      <TableCell className="text-right font-medium">
-        {formatCurrency(doc.valores.total)}
-      </TableCell>
-
-      <TableCell className="text-center">
-        {hasWarnings ? (
-          <Badge
-            variant="outline"
-            className="border-amber-500 text-amber-600 dark:text-amber-400"
-          >
-            <AlertCircle aria-hidden="true" />
-            Advertencia
-          </Badge>
-        ) : (
-          <Badge
-            variant="outline"
-            className="border-emerald-500 text-emerald-600 dark:text-emerald-400"
-          >
-            <CheckCircle2 aria-hidden="true" />
-            OK
-          </Badge>
-        )}
-      </TableCell>
-    </TableRow>
   );
 }
