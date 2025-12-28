@@ -165,9 +165,7 @@ await db.insert(organizations).values({
   name: "Mi Empresa",
   ruc: "1234567890001",
   email: "contacto@empresa.com",
-  plan: "free",
   status: "active",
-  maxMonthlyDocuments: 100,
   createdAt: getCurrentTimestamp(),
   updatedAt: getCurrentTimestamp(),
 });

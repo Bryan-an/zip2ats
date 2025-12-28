@@ -97,9 +97,7 @@ CREATE TABLE `organizations` (
 	`name` text NOT NULL,
 	`ruc` text NOT NULL,
 	`email` text NOT NULL,
-	`plan` text DEFAULT 'free' NOT NULL,
 	`status` text DEFAULT 'active' NOT NULL,
-	`max_monthly_documents` integer DEFAULT 100 NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
 );
