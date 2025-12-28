@@ -73,7 +73,6 @@ export const uploadBatches = sqliteTable(
       .references(() => users.id),
     originalFilename: text("original_filename").notNull(),
     fileSize: integer("file_size").notNull(),
-    r2Key: text("r2_key").notNull(),
     status: text("status", {
       enum: ["pending", "processing", "completed", "failed"],
     })
@@ -160,7 +159,6 @@ export const documents = sqliteTable(
     formaPago: text("forma_pago"),
 
     // Metadatos
-    xmlOriginalR2Key: text("xml_original_r2_key"),
     xmlHash: text("xml_hash"),
     procesamientoStatus: text("procesamiento_status", {
       enum: ["success", "warning", "error"],
@@ -212,7 +210,6 @@ export const atsReports = sqliteTable(
 
     // Archivo generado
     formato: text("formato", { enum: ["xlsx", "csv"] }).notNull(),
-    r2Key: text("r2_key").notNull(),
     fileSize: integer("file_size").notNull(),
 
     // Metadata
