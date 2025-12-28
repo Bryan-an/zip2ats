@@ -170,7 +170,6 @@ export interface OrganizationUsage {
   periodo: string; // YYYY-MM
   totalBatches: number;
   totalDocuments: number;
-  totalStorageBytes: number;
 }
 
 /**

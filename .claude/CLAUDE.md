@@ -10,7 +10,7 @@ A micro-SaaS web app that processes electronic receipts XML from Ecuador's SRI, 
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4
 - **Package Manager**: pnpm
-- **Backend**: Cloudflare Workers + D1 (SQLite) + R2 (Storage)
+- **Backend**: Cloudflare Workers + D1 (SQLite)
 - **Database ORM**: Drizzle ORM
 - **UI Components**: Radix UI
 - **Forms**: React Hook Form + Zod validation
@@ -104,7 +104,6 @@ Target platform: **Cloudflare Pages**
 
 - Edge compute: Cloudflare Workers
 - Database: Cloudflare D1 (SQLite)
-- Storage: Cloudflare R2
 
 ## Additional Context
 
