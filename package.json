@@ -8,6 +8,7 @@
     "build:pages": "opennextjs-cloudflare build",
     "deploy:default": "wrangler deploy",
     "deploy:prod": "wrangler deploy --env production",
+    "versions:upload": "wrangler versions upload",
     "preview:cloudflare": "wrangler dev",
     "start": "next start",
     "type-check": "tsc --noEmit",
