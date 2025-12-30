@@ -1,6 +1,5 @@
 CREATE TABLE `ats_reports` (
 	`id` text PRIMARY KEY NOT NULL,
-	`organization_id` text NOT NULL,
 	`user_id` text NOT NULL,
 	`periodo` text NOT NULL,
 	`tipo_reporte` text NOT NULL,
@@ -11,17 +10,15 @@ CREATE TABLE `ats_reports` (
 	`generated_at` integer NOT NULL,
 	`downloaded_at` integer,
 	`expires_at` integer,
-	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE INDEX `idx_reports_organization` ON `ats_reports` (`organization_id`);--> statement-breakpoint
+CREATE INDEX `idx_reports_user` ON `ats_reports` (`user_id`);--> statement-breakpoint
 CREATE INDEX `idx_reports_periodo` ON `ats_reports` (`periodo`);--> statement-breakpoint
 CREATE INDEX `idx_reports_generated_at` ON `ats_reports` (`generated_at`);--> statement-breakpoint
-CREATE INDEX `idx_reports_org_periodo` ON `ats_reports` (`organization_id`,`periodo`);--> statement-breakpoint
+CREATE INDEX `idx_reports_user_periodo` ON `ats_reports` (`user_id`,`periodo`);--> statement-breakpoint
 CREATE TABLE `audit_logs` (
 	`id` text PRIMARY KEY NOT NULL,
-	`organization_id` text,
 	`user_id` text,
 	`action` text NOT NULL,
 	`entity_type` text,
@@ -30,17 +27,14 @@ CREATE TABLE `audit_logs` (
 	`ip_address` text,
 	`user_agent` text,
 	`created_at` integer NOT NULL,
-	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE set null,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE INDEX `idx_audit_organization` ON `audit_logs` (`organization_id`);--> statement-breakpoint
 CREATE INDEX `idx_audit_user` ON `audit_logs` (`user_id`);--> statement-breakpoint
 CREATE INDEX `idx_audit_created_at` ON `audit_logs` (`created_at`);--> statement-breakpoint
 CREATE TABLE `documents` (
 	`id` text PRIMARY KEY NOT NULL,
 	`batch_id` text NOT NULL,
-	`organization_id` text NOT NULL,
 	`tipo_documento` text NOT NULL,
 	`numero_autorizacion` text,
 	`clave_acceso` text,
@@ -67,44 +61,15 @@ CREATE TABLE `documents` (
 	`procesamiento_status` text DEFAULT 'success' NOT NULL,
 	`procesamiento_errores` text,
 	`created_at` integer NOT NULL,
-	FOREIGN KEY (`batch_id`) REFERENCES `upload_batches`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`batch_id`) REFERENCES `upload_batches`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE INDEX `idx_documents_batch` ON `documents` (`batch_id`);--> statement-breakpoint
-CREATE INDEX `idx_documents_organization` ON `documents` (`organization_id`);--> statement-breakpoint
 CREATE INDEX `idx_documents_tipo` ON `documents` (`tipo_documento`);--> statement-breakpoint
 CREATE INDEX `idx_documents_fecha_emision` ON `documents` (`fecha_emision`);--> statement-breakpoint
 CREATE INDEX `idx_documents_clave_acceso` ON `documents` (`clave_acceso`);--> statement-breakpoint
 CREATE INDEX `idx_documents_hash` ON `documents` (`xml_hash`);--> statement-breakpoint
 CREATE INDEX `idx_documents_emisor_ruc` ON `documents` (`emisor_ruc`);--> statement-breakpoint
-CREATE INDEX `idx_documents_org_fecha` ON `documents` (`organization_id`,`fecha_emision`);--> statement-breakpoint
-CREATE TABLE `organization_settings` (
-	`organization_id` text PRIMARY KEY NOT NULL,
-	`auto_process_uploads` integer DEFAULT true NOT NULL,
-	`duplicate_detection` integer DEFAULT true NOT NULL,
-	`default_report_format` text DEFAULT 'xlsx' NOT NULL,
-	`include_notes_in_ats` integer DEFAULT true NOT NULL,
-	`email_on_process_complete` integer DEFAULT true NOT NULL,
-	`email_on_process_error` integer DEFAULT true NOT NULL,
-	`notification_email` text,
-	`updated_at` integer NOT NULL,
-	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE cascade
-);
---> statement-breakpoint
-CREATE TABLE `organizations` (
-	`id` text PRIMARY KEY NOT NULL,
-	`name` text NOT NULL,
-	`ruc` text NOT NULL,
-	`email` text NOT NULL,
-	`status` text DEFAULT 'active' NOT NULL,
-	`created_at` integer NOT NULL,
-	`updated_at` integer NOT NULL
-);
---> statement-breakpoint
-CREATE UNIQUE INDEX `organizations_ruc_unique` ON `organizations` (`ruc`);--> statement-breakpoint
-CREATE INDEX `idx_organizations_ruc` ON `organizations` (`ruc`);--> statement-breakpoint
-CREATE INDEX `idx_organizations_status` ON `organizations` (`status`);--> statement-breakpoint
 CREATE TABLE `sri_catalogs` (
 	`id` text PRIMARY KEY NOT NULL,
 	`catalog_type` text NOT NULL,
@@ -117,7 +82,6 @@ CREATE INDEX `idx_catalogs_type` ON `sri_catalogs` (`catalog_type`);--> statemen
 CREATE INDEX `idx_catalogs_type_code` ON `sri_catalogs` (`catalog_type`,`code`);--> statement-breakpoint
 CREATE TABLE `upload_batches` (
 	`id` text PRIMARY KEY NOT NULL,
-	`organization_id` text NOT NULL,
 	`user_id` text NOT NULL,
 	`original_filename` text NOT NULL,
 	`file_size` integer NOT NULL,
@@ -128,26 +92,35 @@ CREATE TABLE `upload_batches` (
 	`error_message` text,
 	`uploaded_at` integer NOT NULL,
 	`processed_at` integer,
-	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE INDEX `idx_batches_organization` ON `upload_batches` (`organization_id`);--> statement-breakpoint
+CREATE INDEX `idx_batches_user` ON `upload_batches` (`user_id`);--> statement-breakpoint
 CREATE INDEX `idx_batches_status` ON `upload_batches` (`status`);--> statement-breakpoint
 CREATE INDEX `idx_batches_uploaded_at` ON `upload_batches` (`uploaded_at`);--> statement-breakpoint
-CREATE INDEX `idx_batches_org_status_date` ON `upload_batches` (`organization_id`,`status`,`uploaded_at`);--> statement-breakpoint
+CREATE INDEX `idx_batches_user_status_date` ON `upload_batches` (`user_id`,`status`,`uploaded_at`);--> statement-breakpoint
+CREATE TABLE `user_settings` (
+	`user_id` text PRIMARY KEY NOT NULL,
+	`auto_process_uploads` integer DEFAULT true NOT NULL,
+	`duplicate_detection` integer DEFAULT true NOT NULL,
+	`default_report_format` text DEFAULT 'xlsx' NOT NULL,
+	`include_notes_in_ats` integer DEFAULT true NOT NULL,
+	`email_on_process_complete` integer DEFAULT true NOT NULL,
+	`email_on_process_error` integer DEFAULT true NOT NULL,
+	`notification_email` text,
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
 CREATE TABLE `users` (
 	`id` text PRIMARY KEY NOT NULL,
-	`organization_id` text NOT NULL,
 	`email` text NOT NULL,
 	`name` text NOT NULL,
 	`role` text DEFAULT 'member' NOT NULL,
 	`auth_provider_id` text,
 	`created_at` integer NOT NULL,
-	`updated_at` integer NOT NULL,
-	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE cascade
+	`updated_at` integer NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);--> statement-breakpoint
-CREATE INDEX `idx_users_organization` ON `users` (`organization_id`);--> statement-breakpoint
 CREATE INDEX `idx_users_email` ON `users` (`email`);
