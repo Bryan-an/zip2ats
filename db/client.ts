@@ -34,11 +34,11 @@ export type DbClient = ReturnType<typeof createDbClient>;
  * };
  *
  * @example
- * // In a Next.js API route (with next-on-pages)
- * import { getRequestContext } from '@cloudflare/next-on-pages';
+ * // In a Next.js route handler running on Cloudflare (OpenNext)
+ * // (the exact context helper depends on your adapter/runtime setup)
  *
  * export async function GET() {
- *   const { env } = getRequestContext();
+ *   const { env } = getCloudflareContext();
  *   const db = createDbClient(env.DB);
  *   const allUsers = await db.select().from(schema.users);
  *   return Response.json(allUsers);
