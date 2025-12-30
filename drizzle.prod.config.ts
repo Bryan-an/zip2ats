@@ -1,8 +1,8 @@
 import { config as loadEnv } from "dotenv";
 import { defineConfig } from "drizzle-kit";
 
-// Load local development env vars explicitly for Drizzle tooling.
-loadEnv({ path: ".env.local", override: true });
+// Load production env vars explicitly for Drizzle tooling.
+loadEnv({ path: ".env.production", override: true });
 
 export default defineConfig({
   // Schema location
