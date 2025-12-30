@@ -38,7 +38,7 @@ export type DbClient = ReturnType<typeof createDbClient>;
  * // (the exact context helper depends on your adapter/runtime setup)
  *
  * export async function GET() {
- *   const { env } = getAdapterRequestContext();
+ *   const { env } = getCloudflareContext();
  *   const db = createDbClient(env.DB);
  *   const allUsers = await db.select().from(schema.users);
  *   return Response.json(allUsers);
