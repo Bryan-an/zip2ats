@@ -102,6 +102,20 @@ pnpm db:studio:local
 
 Opens at `https://local.drizzle.studio`
 
+### Remote Drizzle Studio (D1 HTTP)
+
+Use a remote D1 database with Drizzle Studio:
+
+```bash
+pnpm db:studio:remote
+```
+
+To connect to the production D1 database run:
+
+```bash
+pnpm db:studio:prod
+```
+
 ### Local Drizzle Studio (SQLite file)
 
 `pnpm db:studio:local` uses [`drizzle.local.config.ts`](../drizzle.local.config.ts) and expects a local SQLite file path.

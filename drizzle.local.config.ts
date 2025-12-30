@@ -1,5 +1,8 @@
-import "dotenv/config";
+import { config as loadEnv } from "dotenv";
 import { defineConfig } from "drizzle-kit";
+
+// Load local development env vars explicitly for Drizzle tooling.
+loadEnv({ path: ".env.local", override: true });
 
 const localDbPath = process.env.LOCAL_DB_PATH ?? "./db.sqlite";
 
