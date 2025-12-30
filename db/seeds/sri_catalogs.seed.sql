@@ -1,9 +1,7 @@
 -- Seeds SRI catalogs into Cloudflare D1 (SQLite).
--- This is intentionally destructive (delete + re-insert) to keep local dev consistent.
--- Source data: official SRI catalogs (Ecuador).
---
+-- Intentionally destructive (delete + re-insert) to keep local dev consistent.
 -- NOTE: Avoid explicit SQL transactions here (BEGIN/COMMIT/SAVEPOINT).
--- Cloudflare D1 remote execution via `wrangler d1 execute --remote` rejects them.
+-- Source data: official SRI catalogs (Ecuador).
 
 DELETE FROM sri_catalogs;
 
@@ -96,4 +94,117 @@ INSERT INTO sri_catalogs (id, catalog_type, code, description, active) VALUES
 ('codigo_retencion_renta:341', 'codigo_retencion_renta', '341', 'Otras retenciones aplicables el 2%', 1),
 ('codigo_retencion_renta:342', 'codigo_retencion_renta', '342', 'Otras retenciones aplicables el 8%', 1),
 ('codigo_retencion_renta:343', 'codigo_retencion_renta', '343', 'Otras retenciones aplicables el 10%', 1),
-('codigo_retencion_renta:344', 'codigo_retencion_renta', '344', 'Compra de bienes de origen agrícola, avícola, pecuario, apícola, cunícula, bioacuático, forestal y carnes en estado natural - 1.75%', 1);
+('codigo_retencion_renta:344', 'codigo_retencion_renta', '344', 'Compra de bienes de origen agrícola, avícola, pecuario, apícola, cunícula, bioacuático, forestal y carnes en estado natural - 1.75%', 1),
+
+-- =====================================================
+-- ATS (PDF SRI) - DISTRITO ADUANERO (Tabla 6)
+-- =====================================================
+('distrito_aduanero:019', 'distrito_aduanero', '019', 'Gquil-Aéreo', 1),
+('distrito_aduanero:028', 'distrito_aduanero', '028', 'Gquil-Marítimo', 1),
+('distrito_aduanero:037', 'distrito_aduanero', '037', 'Manta', 1),
+('distrito_aduanero:046', 'distrito_aduanero', '046', 'Esmeraldas', 1),
+('distrito_aduanero:055', 'distrito_aduanero', '055', 'Quito', 1),
+('distrito_aduanero:064', 'distrito_aduanero', '064', 'Pto-Bolívar', 1),
+('distrito_aduanero:073', 'distrito_aduanero', '073', 'Tulcán', 1),
+('distrito_aduanero:082', 'distrito_aduanero', '082', 'Huaquillas', 1),
+('distrito_aduanero:091', 'distrito_aduanero', '091', 'Cuenca', 1),
+('distrito_aduanero:109', 'distrito_aduanero', '109', 'Loja-Macara', 1),
+('distrito_aduanero:118', 'distrito_aduanero', '118', 'Sta. Elena', 1),
+('distrito_aduanero:127', 'distrito_aduanero', '127', 'Latacunga', 1),
+('distrito_aduanero:136', 'distrito_aduanero', '136', 'Gerencia General', 1),
+('distrito_aduanero:145', 'distrito_aduanero', '145', 'CEBAF – San Miguel', 1),
+
+-- =====================================================
+-- ATS (PDF SRI) - CÓDIGO RÉGIMEN (Tabla 7.1)
+-- =====================================================
+('codigo_regimen:40', 'codigo_regimen', '40', 'Exportación definitiva', 1),
+('codigo_regimen:50', 'codigo_regimen', '50', 'Exportación temporal para reimportación en el mismo estado', 1),
+('codigo_regimen:51', 'codigo_regimen', '51', 'Exportación temporal para perfeccionamiento pasivo', 1),
+('codigo_regimen:60', 'codigo_regimen', '60', 'Reexp. de mercancías en el mismo estado', 1),
+('codigo_regimen:61', 'codigo_regimen', '61', 'Reexportación de mercancías que fueron importadas para perfeccionamiento activo', 1),
+('codigo_regimen:79', 'codigo_regimen', '79', 'Exportación a consumo desde Zona Franca', 1),
+('codigo_regimen:83', 'codigo_regimen', '83', 'Reembarque', 1),
+('codigo_regimen:94', 'codigo_regimen', '94', 'Courier exportación', 1),
+('codigo_regimen:95', 'codigo_regimen', '95', 'Exportaciones Correos del Ecuador', 1),
+
+-- =====================================================
+-- ATS (PDF SRI) - TARJETAS DE CRÉDITO (Tabla 8)
+-- =====================================================
+('tarjeta_credito:01', 'tarjeta_credito', '01', 'AMERICAN EXPRESS', 1),
+('tarjeta_credito:02', 'tarjeta_credito', '02', 'DINERS CLUB', 1),
+('tarjeta_credito:04', 'tarjeta_credito', '04', 'MASTERCARD', 1),
+('tarjeta_credito:05', 'tarjeta_credito', '05', 'VISA', 1),
+('tarjeta_credito:07', 'tarjeta_credito', '07', 'OTRA TARJETA', 1),
+
+-- =====================================================
+-- ATS (PDF SRI) - TIPO IDENTIFICACIÓN DEL PROVEEDOR (Tabla 14)
+-- =====================================================
+('tipo_id_proveedor:01', 'tipo_id_proveedor', '01', 'Persona natural', 1),
+('tipo_id_proveedor:02', 'tipo_id_proveedor', '02', 'Sociedad', 1),
+
+-- =====================================================
+-- ATS (PDF SRI) - TIPO DE PAGO (Tabla 15)
+-- =====================================================
+('tipo_pago_ats:01', 'tipo_pago_ats', '01', 'Pago a residente / Establecimiento permanente', 1),
+('tipo_pago_ats:0282', 'tipo_pago_ats', '0282', 'Pago a no residente', 1),
+
+-- =====================================================
+-- ATS (PDF SRI) - TIPOS DE INGRESOS DEL EXTERIOR (Tabla 18)
+-- =====================================================
+('tipo_ingreso_exterior:401', 'tipo_ingreso_exterior', '401', 'Rentas Inmobiliarias', 1),
+('tipo_ingreso_exterior:402', 'tipo_ingreso_exterior', '402', 'Beneficios y servicios Empresariales / Asistencia técnica', 1),
+('tipo_ingreso_exterior:403', 'tipo_ingreso_exterior', '403', 'Beneficios y servicios Empresariales / Comisiones', 1),
+('tipo_ingreso_exterior:404', 'tipo_ingreso_exterior', '404', 'Beneficios y servicios Empresariales / Comisiones sobre préstamos', 1),
+('tipo_ingreso_exterior:405', 'tipo_ingreso_exterior', '405', 'Beneficios y servicios Empresariales/Honorarios', 1),
+('tipo_ingreso_exterior:406', 'tipo_ingreso_exterior', '406', 'Beneficios y servicios Empresariales / Publicidad', 1),
+('tipo_ingreso_exterior:407', 'tipo_ingreso_exterior', '407', 'Beneficios y servicios Empresariales / Servicios administrativos', 1),
+('tipo_ingreso_exterior:408', 'tipo_ingreso_exterior', '408', 'Beneficios y servicios Empresariales / Servicios financieros', 1),
+('tipo_ingreso_exterior:409', 'tipo_ingreso_exterior', '409', 'Beneficios y servicios Empresariales / Servicios intermedios de la producción (maquila)', 1),
+('tipo_ingreso_exterior:410', 'tipo_ingreso_exterior', '410', 'Beneficios y servicios Empresariales / Servicios técnicos', 1),
+('tipo_ingreso_exterior:411', 'tipo_ingreso_exterior', '411', 'Navegación Marítima y/o aérea', 1),
+('tipo_ingreso_exterior:412', 'tipo_ingreso_exterior', '412', 'Dividendos', 1),
+('tipo_ingreso_exterior:413', 'tipo_ingreso_exterior', '413', 'Rendimientos financieros / Comisiones sobre préstamos', 1),
+('tipo_ingreso_exterior:414', 'tipo_ingreso_exterior', '414', 'Rendimientos financieros / Otras inversiones', 1),
+('tipo_ingreso_exterior:415', 'tipo_ingreso_exterior', '415', 'Garantías', 1),
+('tipo_ingreso_exterior:416', 'tipo_ingreso_exterior', '416', 'Servicios profesionales independientes / dependientes', 1),
+('tipo_ingreso_exterior:417', 'tipo_ingreso_exterior', '417', 'Intereses sobre préstamos', 1),
+('tipo_ingreso_exterior:418', 'tipo_ingreso_exterior', '418', 'Intereses créditos en ventas', 1),
+('tipo_ingreso_exterior:419', 'tipo_ingreso_exterior', '419', 'Regalías / Cánones, derechos de autor, marcas, patentes y similares', 1),
+('tipo_ingreso_exterior:420', 'tipo_ingreso_exterior', '420', 'Regalías / Por concepto de franquicias', 1),
+('tipo_ingreso_exterior:421', 'tipo_ingreso_exterior', '421', 'Seguros y reaseguros (primas y cesiones)', 1),
+('tipo_ingreso_exterior:422', 'tipo_ingreso_exterior', '422', 'Utilidad o pérdida por derivados financieros', 1),
+('tipo_ingreso_exterior:423', 'tipo_ingreso_exterior', '423', 'Utilidad por operaciones de futuros distintas de las del sector financiero', 1),
+('tipo_ingreso_exterior:424', 'tipo_ingreso_exterior', '424', 'Venta de bienes intangibles', 1),
+('tipo_ingreso_exterior:425', 'tipo_ingreso_exterior', '425', 'Enajenación de derechos representativos de capital', 1),
+('tipo_ingreso_exterior:426', 'tipo_ingreso_exterior', '426', 'Enajenación de obligaciones', 1),
+('tipo_ingreso_exterior:427', 'tipo_ingreso_exterior', '427', 'Artistas', 1),
+('tipo_ingreso_exterior:428', 'tipo_ingreso_exterior', '428', 'Deportistas', 1),
+('tipo_ingreso_exterior:429', 'tipo_ingreso_exterior', '429', 'Participación de consejeros', 1),
+('tipo_ingreso_exterior:430', 'tipo_ingreso_exterior', '430', 'Entretenimiento Público', 1),
+('tipo_ingreso_exterior:431', 'tipo_ingreso_exterior', '431', 'Pensiones', 1),
+('tipo_ingreso_exterior:432', 'tipo_ingreso_exterior', '432', 'Reembolso de Gastos', 1),
+('tipo_ingreso_exterior:433', 'tipo_ingreso_exterior', '433', 'Funciones Públicas', 1),
+('tipo_ingreso_exterior:434', 'tipo_ingreso_exterior', '434', 'Estudiantes', 1),
+('tipo_ingreso_exterior:435', 'tipo_ingreso_exterior', '435', 'Arrendamiento mercantil internacional', 1),
+('tipo_ingreso_exterior:436', 'tipo_ingreso_exterior', '436', 'Contratos de fletamento de naves para empresas de transporte aéreo o marítimo internacional', 1),
+('tipo_ingreso_exterior:437', 'tipo_ingreso_exterior', '437', 'Seguros y reaseguros (primas y cesiones)', 1),
+('tipo_ingreso_exterior:438', 'tipo_ingreso_exterior', '438', 'Otros ingresos', 1),
+
+-- =====================================================
+-- ATS (PDF SRI) - TIPOS DE RÉGIMEN FISCAL DEL EXTERIOR (Tabla 19)
+-- =====================================================
+('regimen_fiscal_exterior:01', 'regimen_fiscal_exterior', '01', 'Régimen general', 1),
+('regimen_fiscal_exterior:02', 'regimen_fiscal_exterior', '02', 'Paraíso fiscal', 1),
+('regimen_fiscal_exterior:03', 'regimen_fiscal_exterior', '03', 'Régimen fiscal preferente o jurisdicción de menor imposición', 1),
+
+-- =====================================================
+-- ATS (PDF SRI) - TIPO DE EMISIÓN FACTURACIÓN (Tabla 20)
+-- =====================================================
+('tipo_emision_facturacion:F', 'tipo_emision_facturacion', 'F', 'Facturación Física', 1),
+('tipo_emision_facturacion:E', 'tipo_emision_facturacion', 'E', 'Facturación Electrónica', 1),
+
+-- =====================================================
+-- ATS (PDF SRI) - TIPO DE COMPENSACIONES (Tabla 21)
+-- =====================================================
+('tipo_compensacion:01', 'tipo_compensacion', '01', 'Ley Solidaridad - Zonas Afectadas', 1),
+('tipo_compensacion:02', 'tipo_compensacion', '02', 'Medios Electrónicos', 1);
