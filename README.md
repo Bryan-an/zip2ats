@@ -113,10 +113,16 @@ pnpm preview:cloudflare
 
 ### Deploy (CLI)
 
-Authenticate (once) and deploy:
+Authenticate (once) and deploy.
+
+Notes:
+
+- `pnpm deploy:cloudflare` deploys the **default** environment (Worker `zip2ats`).
+- To deploy using `env.production` (Worker `zip2ats-production`), deploy with `--env production`.
 
 ```bash
-pnpm deploy:cloudflare
+pnpm build:pages
+pnpm wrangler deploy --env production
 ```
 
 ### Deploy with Git (Cloudflare dashboard)
@@ -124,7 +130,7 @@ pnpm deploy:cloudflare
 Use **Workers Builds** (Git integration) and set:
 
 - **Build command**: `pnpm build:pages`
-- **Deploy command**: `wrangler deploy`
+- **Deploy command**: `pnpm wrangler deploy --env production`
 
 Then configure your production bindings (like D1 `DB`) in the Cloudflare dashboard or via `wrangler.toml`.
 

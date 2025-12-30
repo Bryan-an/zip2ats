@@ -190,10 +190,10 @@ users (1) ──┬─> (N) upload_batches ──> (N) documents
 
 ```bash
 # Development
-npx wrangler d1 create zip2ats-db
+pnpm wrangler d1 create zip2ats-db
 
 # Production
-npx wrangler d1 create zip2ats-db-production
+pnpm wrangler d1 create zip2ats-db-production
 ```
 
 Copy the `database_id` to `wrangler.toml`.
@@ -202,10 +202,10 @@ Copy the `database_id` to `wrangler.toml`.
 
 ```bash
 # Local
-npx wrangler d1 execute zip2ats-db --local --command "SELECT * FROM users"
+pnpm wrangler d1 execute zip2ats-db --local --command "SELECT * FROM users"
 
 # Remote
-npx wrangler d1 execute zip2ats-db --remote --command "SELECT * FROM users"
+pnpm wrangler d1 execute zip2ats-db --remote --command "SELECT * FROM users"
 ```
 
 ## Example Usage
