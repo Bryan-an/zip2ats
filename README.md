@@ -85,9 +85,67 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deployment
 
-This application is designed to be deployed on **Cloudflare Pages** with:
+This application is designed to run on **Cloudflare Workers** with:
 
-- Cloudflare Workers for edge compute
-- Cloudflare D1 for database (SQLite)
+- **OpenNext adapter** (`@opennextjs/cloudflare`) for Next.js on Cloudflare
+- **Cloudflare D1** for the database (SQLite)
 
-Deployment configuration coming soon.
+### Build for Cloudflare
+
+Generate the Cloudflare-compatible production bundle:
+
+```bash
+pnpm build:pages
+```
+
+This produces:
+
+- `.open-next/worker.js` (Worker entrypoint)
+- `.open-next/assets/` (static assets)
+
+### Local preview (Wrangler)
+
+After building:
+
+```bash
+pnpm preview:cloudflare
+```
+
+### Deploy (CLI)
+
+Authenticate (once) and deploy:
+
+```bash
+pnpm deploy:cloudflare
+```
+
+### Deploy with Git (Cloudflare dashboard)
+
+Use **Workers Builds** (Git integration) and set:
+
+- **Build command**: `pnpm build:pages`
+- **Deploy command**: `wrangler deploy`
+
+Then configure your production bindings (like D1 `DB`) in the Cloudflare dashboard or via `wrangler.toml`.
+
+### Production database (D1)
+
+Create a production D1 database and wire it to the `DB` binding:
+
+```bash
+pnpm wrangler d1 create zip2ats-db-production
+```
+
+Copy the generated `database_id` into `wrangler.toml` (`env.production.d1_databases`), then run:
+
+```bash
+pnpm db:d1:migrations:apply:prod
+pnpm db:seed:prod
+```
+
+### Custom domain + TLS
+
+In Cloudflare Dashboard (Workers):
+
+- Add a **Custom Domain** for the Worker (and/or a route under your zone)
+- Verify DNS is in Cloudflare and the SSL/TLS certificate becomes **Active**

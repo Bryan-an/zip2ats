@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:pages": "opennextjs-cloudflare build",
+    "deploy:cloudflare": "opennextjs-cloudflare deploy",
+    "preview:cloudflare": "wrangler dev",
     "start": "next start",
     "type-check": "tsc --noEmit",
     "lint": "eslint",
@@ -19,8 +22,10 @@
     "db:studio:remote": "drizzle-kit studio --config drizzle.config.ts --port 4983",
     "db:seed:remote": "pnpm db:d1:migrations:apply:remote && wrangler d1 execute zip2ats-db --remote --file db/seeds/sri_catalogs.seed.sql",
     "db:seed:local": "pnpm db:d1:migrations:apply:local && wrangler d1 execute zip2ats-db --local --file db/seeds/sri_catalogs.seed.sql",
+    "db:seed:prod": "pnpm db:d1:migrations:apply:prod && wrangler d1 execute zip2ats-db-production --remote --env production --file db/seeds/sri_catalogs.seed.sql",
     "db:d1:migrations:apply:local": "wrangler d1 migrations apply zip2ats-db --local",
-    "db:d1:migrations:apply:remote": "wrangler d1 migrations apply zip2ats-db --remote"
+    "db:d1:migrations:apply:remote": "wrangler d1 migrations apply zip2ats-db --remote",
+    "db:d1:migrations:apply:prod": "wrangler d1 migrations apply zip2ats-db-production --remote --env production"
   },
   "dependencies": {
     "@hookform/resolvers": "5.2.2",
@@ -46,7 +51,8 @@
     "zod": "4.1.13"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20251111.0",
+    "@cloudflare/workers-types": "^4.20251210.0",
+    "@opennextjs/cloudflare": "^1.14.7",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -64,7 +70,7 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.4.0",
     "typescript": "^5",
-    "wrangler": "^4.48.0"
+    "wrangler": "^4.54.0"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs}": [

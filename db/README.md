@@ -55,7 +55,13 @@ pnpm db:d1:migrations:apply:remote
 **Production:**
 
 ```bash
-npx wrangler d1 migrations apply zip2ats-db-production --env production
+pnpm db:d1:migrations:apply:prod
+```
+
+Optional (seed SRI catalogs; destructive for `sri_catalogs`):
+
+```bash
+pnpm db:seed:prod
 ```
 
 ### Seed Data
