@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "45e2948e-391d-4b72-99e9-616d0c9e4332",
+  "id": "aa77e199-52e2-4270-b0ec-06b5ecebe0bb",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "ats_reports": {
@@ -11,13 +11,6 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "organization_id": {
-          "name": "organization_id",
-          "type": "text",
-          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
@@ -93,9 +86,9 @@
         }
       },
       "indexes": {
-        "idx_reports_organization": {
-          "name": "idx_reports_organization",
-          "columns": ["organization_id"],
+        "idx_reports_user": {
+          "name": "idx_reports_user",
+          "columns": ["user_id"],
           "isUnique": false
         },
         "idx_reports_periodo": {
@@ -108,22 +101,13 @@
           "columns": ["generated_at"],
           "isUnique": false
         },
-        "idx_reports_org_periodo": {
-          "name": "idx_reports_org_periodo",
-          "columns": ["organization_id", "periodo"],
+        "idx_reports_user_periodo": {
+          "name": "idx_reports_user_periodo",
+          "columns": ["user_id", "periodo"],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "ats_reports_organization_id_organizations_id_fk": {
-          "name": "ats_reports_organization_id_organizations_id_fk",
-          "tableFrom": "ats_reports",
-          "tableTo": "organizations",
-          "columnsFrom": ["organization_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
         "ats_reports_user_id_users_id_fk": {
           "name": "ats_reports_user_id_users_id_fk",
           "tableFrom": "ats_reports",
@@ -146,13 +130,6 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": false
-        },
-        "organization_id": {
-          "name": "organization_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
           "autoincrement": false
         },
         "user_id": {
@@ -213,11 +190,6 @@
         }
       },
       "indexes": {
-        "idx_audit_organization": {
-          "name": "idx_audit_organization",
-          "columns": ["organization_id"],
-          "isUnique": false
-        },
         "idx_audit_user": {
           "name": "idx_audit_user",
           "columns": ["user_id"],
@@ -230,15 +202,6 @@
         }
       },
       "foreignKeys": {
-        "audit_logs_organization_id_organizations_id_fk": {
-          "name": "audit_logs_organization_id_organizations_id_fk",
-          "tableFrom": "audit_logs",
-          "tableTo": "organizations",
-          "columnsFrom": ["organization_id"],
-          "columnsTo": ["id"],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "audit_logs_user_id_users_id_fk": {
           "name": "audit_logs_user_id_users_id_fk",
           "tableFrom": "audit_logs",
@@ -265,13 +228,6 @@
         },
         "batch_id": {
           "name": "batch_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "organization_id": {
-          "name": "organization_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -476,11 +432,6 @@
           "columns": ["batch_id"],
           "isUnique": false
         },
-        "idx_documents_organization": {
-          "name": "idx_documents_organization",
-          "columns": ["organization_id"],
-          "isUnique": false
-        },
         "idx_documents_tipo": {
           "name": "idx_documents_tipo",
           "columns": ["tipo_documento"],
@@ -505,11 +456,6 @@
           "name": "idx_documents_emisor_ruc",
           "columns": ["emisor_ruc"],
           "isUnique": false
-        },
-        "idx_documents_org_fecha": {
-          "name": "idx_documents_org_fecha",
-          "columns": ["organization_id", "fecha_emision"],
-          "isUnique": false
         }
       },
       "foreignKeys": {
@@ -521,182 +467,8 @@
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
-        },
-        "documents_organization_id_organizations_id_fk": {
-          "name": "documents_organization_id_organizations_id_fk",
-          "tableFrom": "documents",
-          "tableTo": "organizations",
-          "columnsFrom": ["organization_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "organization_settings": {
-      "name": "organization_settings",
-      "columns": {
-        "organization_id": {
-          "name": "organization_id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "auto_process_uploads": {
-          "name": "auto_process_uploads",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": true
-        },
-        "duplicate_detection": {
-          "name": "duplicate_detection",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": true
-        },
-        "default_report_format": {
-          "name": "default_report_format",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'xlsx'"
-        },
-        "include_notes_in_ats": {
-          "name": "include_notes_in_ats",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": true
-        },
-        "email_on_process_complete": {
-          "name": "email_on_process_complete",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": true
-        },
-        "email_on_process_error": {
-          "name": "email_on_process_error",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": true
-        },
-        "notification_email": {
-          "name": "notification_email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "organization_settings_organization_id_organizations_id_fk": {
-          "name": "organization_settings_organization_id_organizations_id_fk",
-          "tableFrom": "organization_settings",
-          "tableTo": "organizations",
-          "columnsFrom": ["organization_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "organizations": {
-      "name": "organizations",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "ruc": {
-          "name": "ruc",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'active'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "organizations_ruc_unique": {
-          "name": "organizations_ruc_unique",
-          "columns": ["ruc"],
-          "isUnique": true
-        },
-        "idx_organizations_ruc": {
-          "name": "idx_organizations_ruc",
-          "columns": ["ruc"],
-          "isUnique": false
-        },
-        "idx_organizations_status": {
-          "name": "idx_organizations_status",
-          "columns": ["status"],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -765,13 +537,6 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "organization_id": {
-          "name": "organization_id",
-          "type": "text",
-          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
@@ -851,9 +616,9 @@
         }
       },
       "indexes": {
-        "idx_batches_organization": {
-          "name": "idx_batches_organization",
-          "columns": ["organization_id"],
+        "idx_batches_user": {
+          "name": "idx_batches_user",
+          "columns": ["user_id"],
           "isUnique": false
         },
         "idx_batches_status": {
@@ -866,22 +631,13 @@
           "columns": ["uploaded_at"],
           "isUnique": false
         },
-        "idx_batches_org_status_date": {
-          "name": "idx_batches_org_status_date",
-          "columns": ["organization_id", "status", "uploaded_at"],
+        "idx_batches_user_status_date": {
+          "name": "idx_batches_user_status_date",
+          "columns": ["user_id", "status", "uploaded_at"],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "upload_batches_organization_id_organizations_id_fk": {
-          "name": "upload_batches_organization_id_organizations_id_fk",
-          "tableFrom": "upload_batches",
-          "tableTo": "organizations",
-          "columnsFrom": ["organization_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
         "upload_batches_user_id_users_id_fk": {
           "name": "upload_batches_user_id_users_id_fk",
           "tableFrom": "upload_batches",
@@ -896,6 +652,95 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "user_settings": {
+      "name": "user_settings",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "auto_process_uploads": {
+          "name": "auto_process_uploads",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "duplicate_detection": {
+          "name": "duplicate_detection",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "default_report_format": {
+          "name": "default_report_format",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'xlsx'"
+        },
+        "include_notes_in_ats": {
+          "name": "include_notes_in_ats",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "email_on_process_complete": {
+          "name": "email_on_process_complete",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "email_on_process_error": {
+          "name": "email_on_process_error",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "notification_email": {
+          "name": "notification_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_settings_user_id_users_id_fk": {
+          "name": "user_settings_user_id_users_id_fk",
+          "tableFrom": "user_settings",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "users": {
       "name": "users",
       "columns": {
@@ -903,13 +748,6 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "organization_id": {
-          "name": "organization_id",
-          "type": "text",
-          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
@@ -963,28 +801,13 @@
           "columns": ["email"],
           "isUnique": true
         },
-        "idx_users_organization": {
-          "name": "idx_users_organization",
-          "columns": ["organization_id"],
-          "isUnique": false
-        },
         "idx_users_email": {
           "name": "idx_users_email",
           "columns": ["email"],
           "isUnique": false
         }
       },
-      "foreignKeys": {
-        "users_organization_id_organizations_id_fk": {
-          "name": "users_organization_id_organizations_id_fk",
-          "tableFrom": "users",
-          "tableTo": "organizations",
-          "columnsFrom": ["organization_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}

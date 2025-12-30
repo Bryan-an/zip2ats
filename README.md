@@ -59,6 +59,10 @@ This project uses several tools to maintain code quality:
 
 The pre-commit hook automatically runs linting and formatting on staged files before each commit.
 
+### Database / Drizzle Studio
+
+Local Drizzle Studio reads from a local SQLite file (`./db.sqlite` by default) and can be pointed at Wrangler's local D1 SQLite via `LOCAL_DB_PATH` or a symlink/copy. See [`db/README.md`](db/README.md).
+
 ### CodeRabbit Configuration
 
 CodeRabbit is configured via `.coderabbit.yaml` to provide automated code reviews on pull requests. It's optimized for:

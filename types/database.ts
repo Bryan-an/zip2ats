@@ -1,12 +1,11 @@
 import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
 import type {
-  organizations,
   users,
   uploadBatches,
   documents,
   atsReports,
   auditLogs,
-  organizationSettings,
+  userSettings,
   sriCatalogs,
 } from "@/db/schema";
 
@@ -22,37 +21,30 @@ export type RUC = string;
 // TABLE SELECT TYPES (for reading from DB)
 // =====================================================
 
-export type Organization = InferSelectModel<typeof organizations>;
 export type User = InferSelectModel<typeof users>;
 export type UploadBatch = InferSelectModel<typeof uploadBatches>;
 export type Document = InferSelectModel<typeof documents>;
 export type ATSReport = InferSelectModel<typeof atsReports>;
 export type AuditLog = InferSelectModel<typeof auditLogs>;
-export type OrganizationSettings = InferSelectModel<
-  typeof organizationSettings
->;
+export type UserSettings = InferSelectModel<typeof userSettings>;
 export type SRICatalog = InferSelectModel<typeof sriCatalogs>;
 
 // =====================================================
 // TABLE INSERT TYPES (for creating records)
 // =====================================================
 
-export type NewOrganization = InferInsertModel<typeof organizations>;
 export type NewUser = InferInsertModel<typeof users>;
 export type NewUploadBatch = InferInsertModel<typeof uploadBatches>;
 export type NewDocument = InferInsertModel<typeof documents>;
 export type NewATSReport = InferInsertModel<typeof atsReports>;
 export type NewAuditLog = InferInsertModel<typeof auditLogs>;
-export type NewOrganizationSettings = InferInsertModel<
-  typeof organizationSettings
->;
+export type NewUserSettings = InferInsertModel<typeof userSettings>;
 export type NewSRICatalog = InferInsertModel<typeof sriCatalogs>;
 
 // =====================================================
 // ENUM TYPES
 // =====================================================
 
-export type OrganizationStatus = "active" | "suspended" | "cancelled";
 export type UserRole = "owner" | "admin" | "member";
 export type UploadBatchStatus =
   | "pending"
@@ -77,12 +69,7 @@ export type AuditAction =
   | "update_settings"
   | "user_login"
   | "user_logout";
-export type EntityType =
-  | "batch"
-  | "document"
-  | "report"
-  | "user"
-  | "organization";
+export type EntityType = "batch" | "document" | "report" | "user";
 export type CatalogType =
   | "forma_pago"
   | "tipo_identificacion"
@@ -96,17 +83,10 @@ export type CatalogType =
 // =====================================================
 
 /**
- * Organization with related settings
+ * User settings
  */
-export interface OrganizationWithSettings extends Organization {
-  settings?: OrganizationSettings;
-}
-
-/**
- * User with organization details
- */
-export interface UserWithOrganization extends User {
-  organization: Organization;
+export interface UserWithSettings extends User {
+  settings?: UserSettings;
 }
 
 /**
@@ -149,10 +129,10 @@ export interface DocumentWithDollars
 }
 
 /**
- * Monthly summary for an organization
+ * Monthly summary for a user
  */
 export interface MonthlyDocumentsSummary {
-  organizationId: UUID;
+  userId: UUID;
   periodo: string; // YYYY-MM
   tipoDocumento: TipoDocumento;
   totalDocumentos: number;
@@ -160,11 +140,10 @@ export interface MonthlyDocumentsSummary {
 }
 
 /**
- * Organization usage statistics
+ * User usage statistics
  */
-export interface OrganizationUsage {
-  organizationId: UUID;
-  name: string;
+export interface UserUsage {
+  userId: UUID;
   periodo: string; // YYYY-MM
   totalBatches: number;
   totalDocuments: number;

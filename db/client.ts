@@ -28,8 +28,8 @@ export type DbClient = ReturnType<typeof createDbClient>;
  * export default {
  *   async fetch(request: Request, env: Env) {
  *     const db = createDbClient(env.DB);
- *     const orgs = await db.select().from(schema.organizations);
- *     return Response.json(orgs);
+ *     const allUsers = await db.select().from(schema.users);
+ *     return Response.json(allUsers);
  *   }
  * };
  *
@@ -40,7 +40,7 @@ export type DbClient = ReturnType<typeof createDbClient>;
  * export async function GET() {
  *   const { env } = getRequestContext();
  *   const db = createDbClient(env.DB);
- *   const orgs = await db.select().from(schema.organizations);
- *   return Response.json(orgs);
+ *   const allUsers = await db.select().from(schema.users);
+ *   return Response.json(allUsers);
  * }
  */

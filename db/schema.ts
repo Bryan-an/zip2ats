@@ -1,39 +1,13 @@
 import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
 
 // =====================================================
-// ORGANIZATIONS (Multi-tenant clients)
-// =====================================================
-
-export const organizations = sqliteTable(
-  "organizations",
-  {
-    id: text("id").primaryKey(),
-    name: text("name").notNull(),
-    ruc: text("ruc").notNull().unique(),
-    email: text("email").notNull(),
-    status: text("status", { enum: ["active", "suspended", "cancelled"] })
-      .notNull()
-      .default("active"),
-    createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
-  },
-  (table) => [
-    index("idx_organizations_ruc").on(table.ruc),
-    index("idx_organizations_status").on(table.status),
-  ]
-);
-
-// =====================================================
-// USERS (Users within organizations)
+// USERS
 // =====================================================
 
 export const users = sqliteTable(
   "users",
   {
     id: text("id").primaryKey(),
-    organizationId: text("organization_id")
-      .notNull()
-      .references(() => organizations.id, { onDelete: "cascade" }),
     email: text("email").notNull().unique(),
     name: text("name").notNull(),
     role: text("role", { enum: ["owner", "admin", "member"] })
@@ -43,10 +17,7 @@ export const users = sqliteTable(
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
   },
-  (table) => [
-    index("idx_users_organization").on(table.organizationId),
-    index("idx_users_email").on(table.email),
-  ]
+  (table) => [index("idx_users_email").on(table.email)]
 );
 
 // =====================================================
@@ -57,9 +28,6 @@ export const uploadBatches = sqliteTable(
   "upload_batches",
   {
     id: text("id").primaryKey(),
-    organizationId: text("organization_id")
-      .notNull()
-      .references(() => organizations.id, { onDelete: "cascade" }),
     userId: text("user_id")
       .notNull()
       .references(() => users.id),
@@ -78,11 +46,11 @@ export const uploadBatches = sqliteTable(
     processedAt: integer("processed_at", { mode: "timestamp" }),
   },
   (table) => [
-    index("idx_batches_organization").on(table.organizationId),
+    index("idx_batches_user").on(table.userId),
     index("idx_batches_status").on(table.status),
     index("idx_batches_uploaded_at").on(table.uploadedAt),
-    index("idx_batches_org_status_date").on(
-      table.organizationId,
+    index("idx_batches_user_status_date").on(
+      table.userId,
       table.status,
       table.uploadedAt
     ),
@@ -100,9 +68,6 @@ export const documents = sqliteTable(
     batchId: text("batch_id")
       .notNull()
       .references(() => uploadBatches.id, { onDelete: "cascade" }),
-    organizationId: text("organization_id")
-      .notNull()
-      .references(() => organizations.id, { onDelete: "cascade" }),
 
     // Identificación del documento
     tipoDocumento: text("tipo_documento", {
@@ -163,17 +128,11 @@ export const documents = sqliteTable(
   },
   (table) => [
     index("idx_documents_batch").on(table.batchId),
-    index("idx_documents_organization").on(table.organizationId),
     index("idx_documents_tipo").on(table.tipoDocumento),
     index("idx_documents_fecha_emision").on(table.fechaEmision),
     index("idx_documents_clave_acceso").on(table.claveAcceso),
     index("idx_documents_hash").on(table.xmlHash),
     index("idx_documents_emisor_ruc").on(table.emisorRuc),
-    // Compound index for common queries
-    index("idx_documents_org_fecha").on(
-      table.organizationId,
-      table.fechaEmision
-    ),
   ]
 );
 
@@ -185,9 +144,6 @@ export const atsReports = sqliteTable(
   "ats_reports",
   {
     id: text("id").primaryKey(),
-    organizationId: text("organization_id")
-      .notNull()
-      .references(() => organizations.id, { onDelete: "cascade" }),
     userId: text("user_id")
       .notNull()
       .references(() => users.id),
@@ -210,10 +166,10 @@ export const atsReports = sqliteTable(
     expiresAt: integer("expires_at", { mode: "timestamp" }),
   },
   (table) => [
-    index("idx_reports_organization").on(table.organizationId),
+    index("idx_reports_user").on(table.userId),
     index("idx_reports_periodo").on(table.periodo),
     index("idx_reports_generated_at").on(table.generatedAt),
-    index("idx_reports_org_periodo").on(table.organizationId, table.periodo),
+    index("idx_reports_user_periodo").on(table.userId, table.periodo),
   ]
 );
 
@@ -225,9 +181,6 @@ export const auditLogs = sqliteTable(
   "audit_logs",
   {
     id: text("id").primaryKey(),
-    organizationId: text("organization_id").references(() => organizations.id, {
-      onDelete: "set null",
-    }),
     userId: text("user_id").references(() => users.id, {
       onDelete: "set null",
     }),
@@ -243,7 +196,7 @@ export const auditLogs = sqliteTable(
       ],
     }).notNull(),
     entityType: text("entity_type", {
-      enum: ["batch", "document", "report", "user", "organization"],
+      enum: ["batch", "document", "report", "user"],
     }),
     entityId: text("entity_id"),
     metadata: text("metadata"), // JSON
@@ -252,20 +205,19 @@ export const auditLogs = sqliteTable(
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   },
   (table) => [
-    index("idx_audit_organization").on(table.organizationId),
     index("idx_audit_user").on(table.userId),
     index("idx_audit_created_at").on(table.createdAt),
   ]
 );
 
 // =====================================================
-// ORGANIZATION SETTINGS (Per-org configuration)
+// USER SETTINGS (Per-user configuration)
 // =====================================================
 
-export const organizationSettings = sqliteTable("organization_settings", {
-  organizationId: text("organization_id")
+export const userSettings = sqliteTable("user_settings", {
+  userId: text("user_id")
     .primaryKey()
-    .references(() => organizations.id, { onDelete: "cascade" }),
+    .references(() => users.id, { onDelete: "cascade" }),
 
   // Configuración de procesamiento
   autoProcessUploads: integer("auto_process_uploads", { mode: "boolean" })

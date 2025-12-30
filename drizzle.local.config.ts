@@ -1,6 +1,8 @@
 import "dotenv/config";
 import { defineConfig } from "drizzle-kit";
 
+const localDbPath = process.env.LOCAL_DB_PATH ?? "./db.sqlite";
+
 export default defineConfig({
   // Schema location
   schema: "./db/schema.ts",
@@ -11,15 +13,9 @@ export default defineConfig({
   // Database driver
   dialect: "sqlite",
 
-  // Driver-specific configuration
-  driver: "d1-http",
-
   // Cloudflare D1 configuration
   dbCredentials: {
-    // For remote (requires Cloudflare account ID and D1 API token)
-    accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,
-    databaseId: process.env.CLOUDFLARE_DATABASE_ID!,
-    token: process.env.CLOUDFLARE_API_TOKEN!,
+    url: localDbPath,
   },
 
   // Print SQL statements
