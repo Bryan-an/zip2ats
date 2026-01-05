@@ -16,6 +16,20 @@ export const metadata: Metadata = {
   title: "zip2ats - Conversor de XML a ATS",
   description:
     "Convierte documentos electrónicos del SRI Ecuador (facturas, retenciones, notas de crédito/débito) a formato ATS para el anexo transaccional simplificado",
+  icons: {
+    icon: [
+      {
+        url: "/favicon-light.svg",
+        type: "image/svg+xml",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/favicon-dark.svg",
+        type: "image/svg+xml",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

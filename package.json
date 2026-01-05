@@ -9,6 +9,7 @@
     "deploy:default": "wrangler deploy",
     "deploy:prod": "wrangler deploy --env production",
     "versions:upload": "wrangler versions upload",
+    "versions:upload:prod": "wrangler versions upload --env production",
     "preview:cloudflare": "wrangler dev",
     "start": "next start",
     "type-check": "tsc --noEmit",
