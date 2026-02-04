@@ -15,15 +15,9 @@ db/
 
 ## Tables
 
-### Core Tables
+This project uses a minimal database schema:
 
-1. **users** - Application users
-2. **upload_batches** - ZIP file uploads (scoped by user)
-3. **documents** - Individual processed XML documents (core table)
-4. **ats_reports** - Generated ATS reports (scoped by user)
-5. **audit_logs** - Complete audit trail
-6. **user_settings** - Per-user configuration
-7. **sri_catalogs** - SRI official codes and catalogs
+1. **sri_catalogs** - SRI official codes and catalogs
 
 ## Usage
 
@@ -163,40 +157,10 @@ pnpm db:studio:remote
 
 ## Schema Highlights
 
-### Monetary Values
+`sri_catalogs` is indexed by:
 
-All monetary amounts are stored as **integers in centavos** to avoid floating-point precision issues:
-
-```typescript
-// ❌ BAD
-total: 12.5; // Can be 12.499999999
-
-// ✅ GOOD
-total: 1250; // Always exact (in centavos)
-```
-
-Use utilities from `@/lib/db-utils`:
-
-- `dollarsToCents()` - Convert dollars to cents
-- `centsToDollars()` - Convert cents to dollars
-- `formatCurrency()` - Format for display
-
-### Indexes
-
-Strategic indexes for performance:
-
-- `documents`: batch_id, fecha_emision, emisor_ruc, clave_acceso, xml_hash
-- `upload_batches`: user + status + uploaded_at
-- `ats_reports`: user + periodo
-
-### Relationships
-
-```
-users (1) ──┬─> (N) upload_batches ──> (N) documents
-           ├─> (N) ats_reports
-           ├─> (N) audit_logs
-           └─> (1) user_settings
-```
+- `catalog_type`
+- (`catalog_type`, `code`)
 
 ## Working with D1
 
@@ -216,32 +180,28 @@ Copy the `database_id` to `wrangler.toml`.
 
 ```bash
 # Local
-pnpm wrangler d1 execute zip2ats-db --local --command "SELECT * FROM users"
+pnpm wrangler d1 execute zip2ats-db --local --command "SELECT * FROM sri_catalogs LIMIT 10"
 
 # Remote
-pnpm wrangler d1 execute zip2ats-db --remote --command "SELECT * FROM users"
+pnpm wrangler d1 execute zip2ats-db --remote --command "SELECT * FROM sri_catalogs LIMIT 10"
 ```
 
 ## Example Usage
 
 ```typescript
 import { createDbClient } from "@/db/client";
-import { documents } from "@/db/schema";
-import { eq, and, gte, lte } from "drizzle-orm";
+import { sriCatalogs } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
 
 // Create client
 const db = createDbClient(env.DB);
 
 // Query with filters
-const docs = await db
+const rows = await db
   .select()
-  .from(documents)
+  .from(sriCatalogs)
   .where(
-    and(
-      eq(documents.batchId, batchId),
-      gte(documents.fechaEmision, "2025-01-01"),
-      lte(documents.fechaEmision, "2025-01-31")
-    )
+    and(eq(sriCatalogs.catalogType, "forma_pago"), eq(sriCatalogs.active, true))
   );
 ```
 
