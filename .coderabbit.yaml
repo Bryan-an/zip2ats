@@ -100,7 +100,7 @@ reviews:
     # GitHub Checks integration
     github-checks:
       enabled: true
-      timeout: 90000 # 90 seconds
+      timeout_ms: 90000 # 90 seconds
 
     # Shellcheck for shell scripts
     shellcheck:
@@ -132,3 +132,9 @@ knowledge_base:
   # Learnings from previous reviews
   learnings:
     scope: auto
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "**/.cursor/rules/*"
+      - "README.md"
+      - "db/README.md"
