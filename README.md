@@ -2,7 +2,12 @@
 
 From SRI XML to ATS ready in minutes.
 
-A micro-SaaS web app that processes electronic receipts XML from Ecuador's SRI, normalizes data, and generates ATS/purchase-sales books in Excel/CSV format.
+A public web app that processes electronic receipts XML from Ecuador's SRI, normalizes data, and generates ATS/purchase-sales books in Excel/CSV format.
+
+## Privacy
+
+- No accounts, no logins.
+- Uploaded files are processed in-memory to generate your results. This app is not designed to store your uploads or build a user history.
 
 ## Tech Stack
 
@@ -10,7 +15,8 @@ A micro-SaaS web app that processes electronic receipts XML from Ecuador's SRI, 
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4
 - **Package Manager**: pnpm
-- **Backend**: Cloudflare Workers + D1 (SQLite)
+- **Backend**: Cloudflare Workers (OpenNext)
+- **Database (optional)**: Cloudflare D1 (SQLite) for SRI catalogs
 - **Linting**: ESLint + Prettier
 - **Git Hooks**: Husky + lint-staged
 - **AI Code Review**: CodeRabbit

@@ -21,6 +21,7 @@ import { logger } from "@/lib/logger";
 import { GenerateATSRequestSchema } from "@/lib/schemas/ats";
 import type { GenerateATSRequest } from "@/lib/schemas/ats";
 import { ATS_ERRORS } from "@/constants/ats";
+import { rateLimit } from "@/lib/rate-limit";
 
 // =====================================================
 // VALIDATION
@@ -129,6 +130,24 @@ function validateRequest(body: unknown): ValidationResult {
  */
 export async function POST(request: NextRequest) {
   try {
+    const limit = rateLimit(request, {
+      keyPrefix: "ats-generate",
+      windowMs: 60_000,
+      maxRequests: 12,
+    });
+
+    if (!limit.allowed) {
+      const res = jsonError(
+        ATS_ERRORS.RATE_LIMITED,
+        "Demasiadas solicitudes. Inténtalo de nuevo en unos segundos.",
+        HttpStatus.TOO_MANY_REQUESTS,
+        { retryAfterSeconds: limit.retryAfterSeconds }
+      );
+
+      res.headers.set("Retry-After", String(limit.retryAfterSeconds));
+      return res;
+    }
+
     // Parse request body
     const body = await request.json();
 
@@ -184,48 +203,48 @@ export async function POST(request: NextRequest) {
           "Content-Length": fileResult.buffer.length.toString(),
         },
       });
-    } else {
-      // CSV format
-      if (options.csvSection) {
-        // Single CSV file for specific section
-        const fileResult = generateCSV(report, options.csvSection);
-
-        logger.info("CSV file generated", {
-          filename: fileResult.filename,
-          section: options.csvSection,
-          size: fileResult.buffer.length,
-        });
-
-        // Return CSV file
-        return new NextResponse(Buffer.from(fileResult.buffer), {
-          status: HttpStatus.OK,
-          headers: {
-            "Content-Type": fileResult.mimeType,
-            "Content-Disposition": `attachment; filename="${fileResult.filename}"`,
-            "Content-Length": fileResult.buffer.length.toString(),
-          },
-        });
-      } else {
-        // CSV bundle: when no `csvSection` is provided we return a ZIP archive
-        // containing one CSV per section that has data (compras and/or ventas).
-        const fileResult = await generateZippedCSVs(report);
-
-        logger.info("CSV ZIP file generated", {
-          filename: fileResult.filename,
-          size: fileResult.buffer.length,
-        });
-
-        // Return ZIP file
-        return new NextResponse(Buffer.from(fileResult.buffer), {
-          status: HttpStatus.OK,
-          headers: {
-            "Content-Type": fileResult.mimeType,
-            "Content-Disposition": `attachment; filename="${fileResult.filename}"`,
-            "Content-Length": fileResult.buffer.length.toString(),
-          },
-        });
-      }
     }
+
+    // CSV format
+    if (options.csvSection) {
+      // Single CSV file for specific section
+      const fileResult = generateCSV(report, options.csvSection);
+
+      logger.info("CSV file generated", {
+        filename: fileResult.filename,
+        section: options.csvSection,
+        size: fileResult.buffer.length,
+      });
+
+      // Return CSV file
+      return new NextResponse(Buffer.from(fileResult.buffer), {
+        status: HttpStatus.OK,
+        headers: {
+          "Content-Type": fileResult.mimeType,
+          "Content-Disposition": `attachment; filename="${fileResult.filename}"`,
+          "Content-Length": fileResult.buffer.length.toString(),
+        },
+      });
+    }
+
+    // CSV bundle: when no `csvSection` is provided we return a ZIP archive
+    // containing one CSV per section that has data (compras and/or ventas).
+    const fileResult = await generateZippedCSVs(report);
+
+    logger.info("CSV ZIP file generated", {
+      filename: fileResult.filename,
+      size: fileResult.buffer.length,
+    });
+
+    // Return ZIP file
+    return new NextResponse(Buffer.from(fileResult.buffer), {
+      status: HttpStatus.OK,
+      headers: {
+        "Content-Type": fileResult.mimeType,
+        "Content-Disposition": `attachment; filename="${fileResult.filename}"`,
+        "Content-Length": fileResult.buffer.length.toString(),
+      },
+    });
   } catch (error) {
     logger.error("ATS generation error", error);
 

@@ -13,6 +13,7 @@ import {
 } from "@/constants/upload";
 import { logger } from "@/lib/logger";
 import { jsonSuccess, jsonError, HttpStatus } from "@/lib/api/response";
+import { rateLimit } from "@/lib/rate-limit";
 
 /**
  * POST /api/upload
@@ -24,6 +25,24 @@ import { jsonSuccess, jsonError, HttpStatus } from "@/lib/api/response";
  */
 export async function POST(request: NextRequest) {
   try {
+    const limit = rateLimit(request, {
+      keyPrefix: "upload",
+      windowMs: 60_000,
+      maxRequests: 6,
+    });
+
+    if (!limit.allowed) {
+      const res = jsonError(
+        UPLOAD_ERRORS.RATE_LIMITED,
+        "Demasiadas solicitudes. Inténtalo de nuevo en unos segundos.",
+        HttpStatus.TOO_MANY_REQUESTS,
+        { retryAfterSeconds: limit.retryAfterSeconds }
+      );
+
+      res.headers.set("Retry-After", String(limit.retryAfterSeconds));
+      return res;
+    }
+
     // Parse multipart form data
     const formData = await request.formData();
     const file = formData.get(ZIP_FILE_FIELD_NAME);
