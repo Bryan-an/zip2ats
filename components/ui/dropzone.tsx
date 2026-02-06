@@ -219,18 +219,20 @@ export function Dropzone({
         aria-label="Seleccionar archivo"
       />
 
-      <div className="flex flex-col items-center justify-center gap-4 p-12 text-center">
+      <div className="flex flex-col items-center justify-center gap-4 p-8 text-center sm:p-12">
         {isLoading ? (
           <>
-            <div className="rounded-full bg-primary/10 p-4">
+            <div className="rounded-full bg-primary/10 p-3 sm:p-4">
               {loadingIcon || defaultLoadingIcon}
             </div>
 
-            <div className="space-y-1">
-              <p className="text-lg font-medium">{loadingTitle}</p>
+            <div className="space-y-1 break-words">
+              <p className="text-base font-medium sm:text-lg">{loadingTitle}</p>
 
               {fileName && (
-                <p className="text-sm text-muted-foreground">{fileName}</p>
+                <p className="break-all text-sm text-muted-foreground">
+                  {fileName}
+                </p>
               )}
             </div>
           </>
@@ -238,7 +240,7 @@ export function Dropzone({
           <>
             <div
               className={cn(
-                "rounded-full p-4 transition-colors",
+                "rounded-full p-3 transition-colors sm:p-4",
                 isDragOver ? "bg-primary/20" : "bg-muted"
               )}
             >
@@ -246,7 +248,7 @@ export function Dropzone({
             </div>
 
             <div className="space-y-1">
-              <p className="text-lg font-medium">
+              <p className="text-base font-medium sm:text-lg">
                 {isDragOver ? dragTitle : title}
               </p>
 

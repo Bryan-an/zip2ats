@@ -184,7 +184,7 @@ export function ATSDownload({ documents, className }: ATSDownloadProps) {
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
           <Download className="h-5 w-5" />
           Descargar ATS
         </CardTitle>
@@ -194,8 +194,10 @@ export function ATSDownload({ documents, className }: ATSDownloadProps) {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-6">
-        <div className="text-sm text-muted-foreground">{helperText}</div>
+      <CardContent className="space-y-6 px-4 sm:px-6">
+        <div className="break-words text-sm text-muted-foreground">
+          {helperText}
+        </div>
 
         <Separator />
 
@@ -277,7 +279,7 @@ export function ATSDownload({ documents, className }: ATSDownloadProps) {
               <div className="space-y-2">
                 <Label>Tipo de archivo</Label>
 
-                <div className="h-9 rounded-md border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+                <div className="h-9 truncate rounded-md border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
                   {fileTypeLabel}
                 </div>
               </div>
@@ -381,7 +383,7 @@ export function ATSDownload({ documents, className }: ATSDownloadProps) {
             <div
               role="status"
               aria-live="polite"
-              className="text-sm text-muted-foreground"
+              className="break-words text-sm text-muted-foreground"
             >
               {statusText || `Se descargará: ${fileTypeLabel}`}
             </div>
@@ -389,7 +391,7 @@ export function ATSDownload({ documents, className }: ATSDownloadProps) {
             <Button
               type="submit"
               disabled={!canDownload}
-              className="sm:self-end"
+              className="w-full sm:w-auto sm:self-end"
             >
               <span className="relative inline-flex items-center justify-center">
                 <span

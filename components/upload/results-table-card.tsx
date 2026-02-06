@@ -27,7 +27,7 @@ import {
   type TypeFilter,
   useUploadResultsTable,
 } from "@/hooks/use-upload-results-table";
-import { ResultRow } from "@/components/upload/results-row";
+import { ResultCard, ResultRow } from "@/components/upload/results-row";
 
 /**
  * Props for {@link UploadResultsTableCard}.
@@ -75,17 +75,17 @@ export function UploadResultsTableCard({
 
   return (
     <Card>
-      <CardContent>
+      <CardContent className="px-4 sm:px-6">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Input
             aria-label="Buscar resultados"
             value={searchQuery}
             onChange={(event) => onSearchQueryChange(event.target.value)}
             placeholder="Buscar por archivo, emisor, receptor…"
-            className="sm:max-w-md"
+            className="w-full sm:max-w-md"
           />
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <Select
               value={statusFilter}
               onValueChange={(value) =>
@@ -132,43 +132,61 @@ export function UploadResultsTableCard({
               size="sm"
               onClick={onClearFilters}
               disabled={!hasActiveFilters}
+              className="w-full sm:w-auto"
             >
               Limpiar
             </Button>
           </div>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Archivo</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Emisor</TableHead>
-              <TableHead>Receptor</TableHead>
-              <TableHead className="text-right">Total</TableHead>
-              <TableHead className="text-center">Estado</TableHead>
-            </TableRow>
-          </TableHeader>
+        <div className="space-y-3 md:hidden">
+          {paginatedResults.length === 0 ? (
+            <div className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
+              No se encontraron resultados con los filtros actuales.
+            </div>
+          ) : (
+            paginatedResults.map((fileResult) => (
+              <ResultCard key={fileResult.filename} fileResult={fileResult} />
+            ))
+          )}
+        </div>
 
-          <TableBody>
-            {paginatedResults.length === 0 ? (
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-muted-foreground text-center"
-                >
-                  No se encontraron resultados con los filtros actuales.
-                </TableCell>
+                <TableHead>Archivo</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Emisor</TableHead>
+                <TableHead>Receptor</TableHead>
+                <TableHead className="text-right">Total</TableHead>
+                <TableHead className="text-center">Estado</TableHead>
               </TableRow>
-            ) : (
-              paginatedResults.map((fileResult) => (
-                <ResultRow key={fileResult.filename} fileResult={fileResult} />
-              ))
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
 
-        <div className="mt-4 flex flex-col gap-3 border-t pt-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+            <TableBody>
+              {paginatedResults.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    className="text-muted-foreground text-center"
+                  >
+                    No se encontraron resultados con los filtros actuales.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                paginatedResults.map((fileResult) => (
+                  <ResultRow
+                    key={fileResult.filename}
+                    fileResult={fileResult}
+                  />
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-3 border-t pt-4 text-sm lg:flex-row lg:items-center lg:justify-between">
           <div className="text-muted-foreground">
             Mostrando{" "}
             <span className="font-medium text-foreground">
@@ -181,12 +199,12 @@ export function UploadResultsTableCard({
             de <span className="font-medium text-foreground">{total}</span>
           </div>
 
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+            <div className="flex items-center justify-between gap-2 sm:justify-start">
               <span className="text-muted-foreground">Filas por página</span>
 
               <Select value={String(pageSize)} onValueChange={onPageSizeChange}>
-                <SelectTrigger className="h-8 w-[88px]">
+                <SelectTrigger className="h-8 w-[96px]">
                   <SelectValue />
                 </SelectTrigger>
 
@@ -198,34 +216,38 @@ export function UploadResultsTableCard({
               </Select>
             </div>
 
-            <div className="text-muted-foreground tabular-nums">
+            <div className="text-muted-foreground tabular-nums sm:text-center">
               Página{" "}
               <span className="font-medium text-foreground">{currentPage}</span>{" "}
               de{" "}
               <span className="font-medium text-foreground">{totalPages}</span>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage((current) => Math.max(1, current - 1))}
-              disabled={currentPage <= 1}
-              aria-label="Página anterior"
-            >
-              Anterior
-            </Button>
+            <div className="grid grid-cols-2 gap-2 sm:flex">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((current) => Math.max(1, current - 1))}
+                disabled={currentPage <= 1}
+                aria-label="Página anterior"
+                className="w-full sm:w-auto"
+              >
+                Anterior
+              </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setPage((current) => Math.min(totalPages, current + 1))
-              }
-              disabled={currentPage >= totalPages}
-              aria-label="Página siguiente"
-            >
-              Siguiente
-            </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setPage((current) => Math.min(totalPages, current + 1))
+                }
+                disabled={currentPage >= totalPages}
+                aria-label="Página siguiente"
+                className="w-full sm:w-auto"
+              >
+                Siguiente
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>

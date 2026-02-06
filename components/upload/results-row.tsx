@@ -22,6 +22,102 @@ interface ResultRowProps {
   fileResult: FileProcessResult;
 }
 
+function ResultStatusBadge({ fileResult }: ResultRowProps) {
+  const { result } = fileResult;
+  const doc = result.document;
+  const hasWarnings = (result.warnings?.length ?? 0) > 0;
+
+  if (!result.success || !doc) {
+    return (
+      <Badge variant="outline" className="border-destructive text-destructive">
+        <XCircle aria-hidden="true" />
+        Error
+      </Badge>
+    );
+  }
+
+  if (hasWarnings) {
+    return (
+      <Badge
+        variant="outline"
+        className="border-amber-500 text-amber-600 dark:text-amber-400"
+      >
+        <AlertCircle aria-hidden="true" />
+        Advertencia
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge
+      variant="outline"
+      className="border-emerald-500 text-emerald-600 dark:text-emerald-400"
+    >
+      <CheckCircle2 aria-hidden="true" />
+      OK
+    </Badge>
+  );
+}
+
+export function ResultCard({ fileResult }: ResultRowProps) {
+  const { filename, result } = fileResult;
+  const doc = result.document;
+
+  return (
+    <article className="space-y-3 rounded-lg border p-3">
+      <div className="space-y-2">
+        <p className="break-all font-mono text-xs">{filename}</p>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {result.success && doc ? (
+            <Badge variant="secondary">
+              {DOCUMENT_TYPE_LABELS[doc.tipo] || doc.tipo}
+            </Badge>
+          ) : null}
+
+          <ResultStatusBadge fileResult={fileResult} />
+        </div>
+      </div>
+
+      {!result.success || !doc ? (
+        <p className="break-words text-sm text-destructive">
+          {result.errors?.[0]?.message || "Error al procesar"}
+        </p>
+      ) : (
+        <>
+          <div className="space-y-2 rounded-md bg-muted/40 p-2 text-sm">
+            <div>
+              <p className="text-xs text-muted-foreground">Emisor</p>
+              <p className="break-words font-medium">
+                {doc.emisor.razonSocial}
+              </p>
+              <p className="text-xs text-muted-foreground">{doc.emisor.ruc}</p>
+            </div>
+
+            <div>
+              <p className="text-xs text-muted-foreground">Receptor</p>
+              <p className="break-words font-medium">
+                {doc.receptor.razonSocial}
+              </p>
+
+              <p className="text-xs text-muted-foreground">
+                {doc.receptor.identificacion}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between border-t pt-2 text-sm">
+            <span className="text-muted-foreground">Total</span>
+            <span className="font-medium">
+              {formatCurrency(doc.valores.total)}
+            </span>
+          </div>
+        </>
+      )}
+    </article>
+  );
+}
+
 /**
  * Renders a single table row for a processed file.
  *
@@ -34,30 +130,26 @@ export function ResultRow({ fileResult }: ResultRowProps) {
   if (!result.success || !doc) {
     return (
       <TableRow>
-        <TableCell className="font-mono text-xs">{filename}</TableCell>
+        <TableCell className="max-w-[220px] break-all font-mono text-xs whitespace-normal">
+          {filename}
+        </TableCell>
 
-        <TableCell colSpan={4} className="text-muted-foreground">
+        <TableCell colSpan={4} className="break-words text-muted-foreground">
           {result.errors?.[0]?.message || "Error al procesar"}
         </TableCell>
 
         <TableCell className="text-center">
-          <Badge
-            variant="outline"
-            className="border-destructive text-destructive"
-          >
-            <XCircle aria-hidden="true" />
-            Error
-          </Badge>
+          <ResultStatusBadge fileResult={fileResult} />
         </TableCell>
       </TableRow>
     );
   }
 
-  const hasWarnings = result.warnings && result.warnings.length > 0;
-
   return (
     <TableRow>
-      <TableCell className="font-mono text-xs">{filename}</TableCell>
+      <TableCell className="max-w-[220px] break-all font-mono text-xs whitespace-normal">
+        {filename}
+      </TableCell>
 
       <TableCell>
         <Badge variant="secondary">
@@ -77,7 +169,7 @@ export function ResultRow({ fileResult }: ResultRowProps) {
             </div>
           </TooltipTrigger>
 
-          <TooltipContent className="max-w-[320px] wrap-break-word">
+          <TooltipContent className="max-w-[320px] break-words">
             {doc.emisor.razonSocial}
           </TooltipContent>
         </Tooltip>
@@ -89,7 +181,7 @@ export function ResultRow({ fileResult }: ResultRowProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <div
-              className="max-w-[200px] truncate focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:rounded-xs"
+              className="max-w-[200px] truncate focus-visible:rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2"
               tabIndex={0}
               aria-label={doc.receptor.razonSocial}
             >
@@ -97,7 +189,7 @@ export function ResultRow({ fileResult }: ResultRowProps) {
             </div>
           </TooltipTrigger>
 
-          <TooltipContent className="max-w-[320px] wrap-break-word">
+          <TooltipContent className="max-w-[320px] break-words">
             {doc.receptor.razonSocial}
           </TooltipContent>
         </Tooltip>
@@ -112,23 +204,7 @@ export function ResultRow({ fileResult }: ResultRowProps) {
       </TableCell>
 
       <TableCell className="text-center">
-        {hasWarnings ? (
-          <Badge
-            variant="outline"
-            className="border-amber-500 text-amber-600 dark:text-amber-400"
-          >
-            <AlertCircle aria-hidden="true" />
-            Advertencia
-          </Badge>
-        ) : (
-          <Badge
-            variant="outline"
-            className="border-emerald-500 text-emerald-600 dark:text-emerald-400"
-          >
-            <CheckCircle2 aria-hidden="true" />
-            OK
-          </Badge>
-        )}
+        <ResultStatusBadge fileResult={fileResult} />
       </TableCell>
     </TableRow>
   );
