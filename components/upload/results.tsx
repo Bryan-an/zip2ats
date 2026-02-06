@@ -69,7 +69,7 @@ export function UploadResults({
       {/* Summary Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
             {allFailed ? (
               <>
                 <XCircle className="h-5 w-5 text-destructive" />
@@ -89,12 +89,15 @@ export function UploadResults({
           </CardTitle>
         </CardHeader>
 
-        <CardContent>
-          <div className="flex flex-wrap gap-6 text-sm">
+        <CardContent className="px-4 sm:px-6">
+          <div className="grid gap-3 text-sm sm:flex sm:flex-wrap sm:gap-6">
             {fileName && (
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 items-start gap-2">
                 <FileText className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">{fileName}</span>
+
+                <span className="break-all text-muted-foreground">
+                  {fileName}
+                </span>
               </div>
             )}
 
@@ -142,15 +145,20 @@ export function UploadResults({
             </CardTitle>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             <ul className="space-y-2 text-sm">
               {result.errors.map((error, index) => (
-                <li key={index} className="flex gap-2 items-center">
-                  <span className="font-mono text-xs text-muted-foreground">
+                <li
+                  key={index}
+                  className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-2"
+                >
+                  <span className="break-all font-mono text-xs text-muted-foreground">
                     {error.filename || "—"}
                   </span>
 
-                  <span className="text-destructive">{error.message}</span>
+                  <span className="break-words text-destructive">
+                    {error.message}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -160,7 +168,11 @@ export function UploadResults({
 
       {/* Reset Button */}
       <div className="flex justify-center">
-        <Button variant="outline" onClick={onReset} className="gap-2">
+        <Button
+          variant="outline"
+          onClick={onReset}
+          className="w-full gap-2 sm:w-auto"
+        >
           <RotateCcw className="h-4 w-4" />
           Subir otro archivo
         </Button>
